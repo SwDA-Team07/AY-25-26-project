@@ -27,7 +27,7 @@ The goal is to study and evaluate both:
 
 * [Davide Colabella](journals/davide.md)
 * [Filippo Benevenga](journals/filippo.md)
-* [Sefa Kurtoglu](journals/sefa.md)
+* [Sefa Kurtoglu](journals/kurtoglu_sefa_s324924.md)
 * [Stefano Arca](journals/stefano.md)
 * [Yaman Yamak](journals/yaman.md)
 
