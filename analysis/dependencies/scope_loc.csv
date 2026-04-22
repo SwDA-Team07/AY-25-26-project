@@ -1,0 +1,7 @@
+module,sloc_main_java
+log4j-core,68024
+log4j-api,16608
+log4j-layout-template-json,6110
+log4j-slf4j2-impl,982
+log4j-jdbc-dbcp2,407
+TOTAL,92131

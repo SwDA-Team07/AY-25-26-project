@@ -1,0 +1,11 @@
+baseline_commit=83702bb6194182572eccf6594acf935f83437e76
+branch=2.x
+modules=log4j-core,log4j-api,log4j-layout-template-json,log4j-slf4j2-impl,log4j-jdbc-dbcp2
+java_main_files=929
+import_edges=6824
+cochange_pairs=1864
+cochange_commits_scanned=54
+cochange_commits_with_pairs=18
+window_start=2025-04-12
+window_end=2026-04-12
+generated_on=2026-04-22
