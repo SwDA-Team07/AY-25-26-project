@@ -30,7 +30,7 @@ Observed scope size:
 - 54 commits scanned, 18 commits contributing at least one file pair
 
 ### Code Dependencies
-Code dependencies are extracted from Java `import` statements across scoped production files.  
+Code dependencies are extracted from Java `import` statements across scoped production files.
 Evidence files:
 
 - [import_edges.csv](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\import_edges.csv)
@@ -99,6 +99,15 @@ Representative mismatches:
 - `FileManager.java <-> RollingRandomAccessFileManager.java`
 
 These inconsistencies are not necessarily design defects; in this case they mostly reveal package-level and feature-level co-evolution (especially in rolling appenders and transport managers).
+
+### Handoff Notes for Patterns and Design Summary
+Inputs that should be reflected by the Patterns owner and in the final Design summary:
+
+- Dependency hotspots (`Plugin.java`, `LogEvent.java`, `StatusLogger.java`) indicate stable extension points and shared abstractions.
+- Co-change clusters in rolling appenders and connection managers show maintenance coupling that should be considered when discussing pattern alternatives.
+- Design summary should state both views explicitly:
+  - Import structure reveals intended architectural dependencies.
+  - Co-change reveals practical maintenance dependencies across feature families.
 
 ---
 
