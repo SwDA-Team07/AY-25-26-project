@@ -50,18 +50,21 @@ Please answer these questions directly:
 5. What final integration changes do you want before freeze (section order, transitions, summary style)?
 
 
-- `Q1: ...`
-- `Q2: ...`
-- `Q3: ...`
-- `Q4: ...`
-- `Q5: ...`
+- `Q1: Yes, the structure works.`
+- `Q2: It is not too long for now. I cannot judge the final word count yet, but at this stage I think it is fine.`
+- `Q3: Yes, the evidence is clear. We just need to replace the local links to external files with relative ones.`
+- `Q4: I would simplify terms like "fan-in", "incoming_refs" which is not really clear to an external evaluator, and "coordination dependencies" with better wording, or just an explanation.`
+- `Q5: The Patterns structure is ok. For the Summary, I would add a few short subsections, for example "Main dependency findings", "Pattern impact", so that it is clear which part we are discussing`
 
 ## Decision log (to fill after feedback)
 
 - Stefano feedback received: [yes/no + date]
-- Filippo feedback received: [yes/no + date]
-- Changes applied to `docs/design.md`: [list]
-- Open items escalated to team: [list]
+- Filippo feedback received: yes, 2026-05-02
+- Changes to apply to `docs/design.md`:
+  - fix relative links;
+  - simplify wording where needed;
+  - update the Summary structure after Patterns are drafted.
+- Open items escalated to team: Stefano should connect Patterns with the dependency hotspots; final word count and links still need checking.
 
 ## Self-check before applying feedback
 
