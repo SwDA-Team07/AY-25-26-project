@@ -5,8 +5,8 @@
 ### Analysis Method
 This dependency analysis is based on a reproducible static + history workflow implemented in:
 
-- [generate_dependency_analysis.py](C:\Users\cekur\IdeaProjects\AY-25-26-project\tools\scripts\generate_dependency_analysis.py)
-- [Dependency Runbook](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\README.md)
+- [generate_dependency_analysis.py](../tools/scripts/generate_dependency_analysis.py)
+- [Dependency Runbook](../analysis/dependencies/README.md)
 
 Locked analysis baseline:
 
@@ -18,8 +18,8 @@ Locked analysis baseline:
 
 Reproducibility metadata and aggregate counts are recorded in:
 
-- [summary.txt](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\summary.txt)
-- [scope_loc.csv](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\scope_loc.csv)
+- [summary.txt](../analysis/dependencies/summary.txt)
+- [scope_loc.csv](../analysis/dependencies/scope_loc.csv)
 
 Observed scope size:
 
@@ -33,8 +33,8 @@ Observed scope size:
 Code dependencies are extracted from Java `import` statements across scoped production files.
 Evidence files:
 
-- [import_edges.csv](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\import_edges.csv)
-- [import_stats.csv](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\import_stats.csv)
+- [import_edges.csv](../analysis/dependencies/import_edges.csv)
+- [import_stats.csv](../analysis/dependencies/import_stats.csv)
 
 Key module-level signals:
 
@@ -46,12 +46,12 @@ Key module-level signals:
   - `log4j-jdbc-dbcp2`: 29 outgoing imports
 
 #### Files with Most Dependencies
-Using `total = outgoing_imports + incoming_refs`:
+Using `total = imports declared by the file + imports pointing to that file`:
 
-- `log4j-core/.../config/plugins/Plugin.java` (`total=219`, `incoming_refs=213`)
-  - Central annotation type reused by many plugin declarations, so incoming references dominate.
-- `log4j-core/.../LogEvent.java` (`total=217`, `incoming_refs=208`)
-  - Shared event contract used across appenders/layouts/filters, which creates broad structural fan-in.
+- `log4j-core/.../config/plugins/Plugin.java` (`total=219`, `imports_received=213`)
+  - Central annotation type reused by many plugin declarations, so references from other files dominate.
+- `log4j-core/.../LogEvent.java` (`total=217`, `imports_received=208`)
+  - Shared event contract used across appenders/layouts/filters, so it is referenced by many classes.
 - `log4j-api/.../status/StatusLogger.java` (`total=185`)
   - Cross-cutting status logging utility with high reuse across API and implementation code.
 
@@ -68,11 +68,11 @@ The lowest non-zero totals are interface/marker-style files (`total=1`), for exa
 There are also 43 files with `total=0` in this scoped graph, typically highly isolated utility or marker units.
 
 ### Knowledge Dependencies (Co-change Analysis)
-Knowledge dependencies are measured from commits in the selected time window using the same scoped file set.  
+Knowledge dependencies are measured from commits in the selected time window using the same scoped file set.
 Evidence files:
 
-- [cochange_pairs.csv](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\cochange_pairs.csv)
-- [inconsistencies.md](C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies\inconsistencies.md)
+- [cochange_pairs.csv](../analysis/dependencies/cochange_pairs.csv)
+- [inconsistencies.md](../analysis/dependencies/inconsistencies.md)
 
 The strongest co-change values are low (max count = 2), which is coherent with a stable mature codebase and a one-year window focused on recent maintenance.
 
@@ -87,10 +87,10 @@ The strongest co-change values are low (max count = 2), which is coherent with a
   - Interpretation: sibling strategies/managers evolve together due to shared policies and behavior alignment.
 - **HTTP/SMTP connection management cluster**
   - Example pair: `HttpURLConnectionManager.java <-> UrlConnectionFactory.java` (`2`, no direct import)
-  - Interpretation: co-change captures operational coupling not represented as direct type dependency.
+  - Interpretation: co-change shows these files are often modified together even without direct imports.
 
 #### Inconsistencies with Code Dependencies
-Several high co-change pairs have **no direct import relation**. This indicates coordination dependencies caused by shared feature maintenance rather than direct compilation links.
+Several high co-change pairs have **no direct import relation**. This indicates maintenance dependencies caused by shared feature work rather than direct compilation links.
 
 Representative mismatches:
 
@@ -155,6 +155,22 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 
 ## Summary
 
-[Summary of the main findings regarding design aspects: dependencies and patterns]
+### Main Dependency Findings
+
+- The selected five-module scope (`log4j-core`, `log4j-api`, `log4j-layout-template-json`, `log4j-slf4j2-impl`, `log4j-jdbc-dbcp2`) contains 92,131 Java SLOC and 929 production files.
+- `log4j-core` is the structural center in import-based analysis, with the strongest flow toward `log4j-api`.
+- High-reference files such as `Plugin.java`, `LogEvent.java`, and `StatusLogger.java` act as shared extension or integration points.
+- Co-change analysis confirms maintenance clusters in rolling appenders and connection managers.
+- Some high co-change pairs have no direct imports, showing maintenance dependencies not visible from code structure alone.
+
+### Pattern Impact (to complete with Member 3)
+
+- Pattern selection should account for dependency hotspots and co-change clusters to avoid isolated pattern descriptions.
+- Pattern alternatives should be checked against maintenance dependencies, especially in rolling appender areas.
+
+### Integration Notes
+
+- Dependencies findings are evidence-backed through `analysis/dependencies/*` artifacts.
+- Final Design summary should merge this section with the Patterns section in a single cohesive narrative.
 
 ---
