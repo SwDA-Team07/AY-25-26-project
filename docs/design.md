@@ -113,43 +113,42 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 
 ## Patterns
 
-[Identify and analyze at least 4 design patterns used in the system]
 
-### Pattern 1: [Pattern Name]
+### Pattern 1: Proxy Pattern
 - **Classes/Components Involved:**
-  - [Class name]: [Role in the pattern]
-  - [Class name]: [Role in the pattern]
-- **Location:** [Link to code]
-- **Purpose:** [What problem does it solve?]
-- **Why Used:** [Why is this pattern beneficial here?]
-- **Alternative Approaches:** [Describe alternative approaches and their pros/cons, if applicable]
+  - Abstract logger: **Proxy (The Gatekeeper)**
+  - Logger: **Subject (The Interface)**
+- **Location:** log4j-api/.../spi/AbstractLogger.java
+- **Purpose:** It acts as an intermediary that intercepts logging calls to verify if a specific log level (e.g., DEBUG) is enabled before passing the data to the core engine.
+- **Why Used:** This pattern is the primary tool for maintaining the architectural dependency flow from `log4j-core` to `log4j-api`. By handling "short-circuit" logic, the Proxy ensures that implementation details remain hidden, supporting the "stable abstraction" role of `StatusLogger.java` found in the dependency analysis.
+- **Alternative Approaches: Decorator Pattern.** While flexible, a Decorator would introduce unnecessary overhead for disabled log levels, whereas the Proxy optimizes performance at the very entry point of the API.
 
-### Pattern 2: [Pattern Name]
+### Pattern 2: Builder Pattern
 - **Classes/Components Involved:**
-  - [Class name]: [Role in the pattern]
-  - [Class name]: [Role in the pattern]
-- **Location:** [Link to code]
-- **Purpose:** [What problem does it solve?]
-- **Why Used:** [Why is this pattern beneficial here?]
-- **Alternative Approaches:** [Describe alternative approaches and their pros/cons, if applicable]
+  - ConsoleAppender.Builder: **Builder**
+  - ConsoleAppender: **Product**
+- **Location:** log4j-core/.../appender/ConsoleAppender.java
+- **Purpose:** It manages the construction of complex components that require multiple optional parameters and dependencies.
+- **Why Used:** This pattern is the functional driver behind the `Plugin.java` hotspot. Because Log4j2 treats almost every component as a plugin, the Builder pattern is used to inject dependencies dynamically. Without it, the 213 incoming references to `Plugin.java` would result in unmanageable constructor coupling.
+- **Alternative Approaches: Factory Method.** Simpler, but it fails to handle the "Parameter Hell" associated with the highly configurable nature of Appenders and Managers.
 
-### Pattern 3: [Pattern Name]
+### Pattern 3: Strategy Pattern
 - **Classes/Components Involved:**
-  - [Class name]: [Role in the pattern]
-  - [Class name]: [Role in the pattern]
-- **Location:** [Link to code]
-- **Purpose:** [What problem does it solve?]
-- **Why Used:** [Why is this pattern beneficial here?]
-- **Alternative Approaches:** [Describe alternative approaches and their pros/cons, if applicable]
+  - Layout: **Strategy Interface**
+  - PatternLayout, JsonLayout: **Concrete Strategies**
+- **Location:** log4j-core/.../core/Layout.java
+- **Purpose:** It makes formatting algorithms interchangeable without modifying the Appender that uses them.
+- **Why Used:** This pattern explains why `LogEvent.java` is a central dependency hotspot (217 total references). `LogEvent` serves as the common context passed to all Strategy implementations. This decoupling allows modules like `log4j-layout-template-json` to exist as external dependencies while remaining perfectly compatible with the Core.
+- **Alternative Approaches: Class Inheritance** Creating specialized Appenders for every format would lead to a "Class Explosion" and increase maintenance coupling within the core module.
 
-### Pattern 4: [Pattern Name]
+### Pattern 4: Chain of Responsability
 - **Classes/Components Involved:**
-  - [Class name]: [Role in the pattern]
-  - [Class name]: [Role in the pattern]
-- **Location:** [Link to code]
-- **Purpose:** [What problem does it solve?]
-- **Why Used:** [Why is this pattern beneficial here?]
-- **Alternative Approaches:** [Describe alternative approaches and their pros/cons, if applicable]
+  - CompositeFilter: **Chain Manager**
+  - Filter: **Handler Interface**
+- **Location:** log4j-core/.../filter/CompositeFilter.java
+- **Purpose:** It passes a log event through a sequence of filters that can independently decide to accept, deny, or pass the event.
+- **Why Used:** The Chain of Responsibility is essential for managing the co-change clusters found in transport and connection managers. By decoupling filtering logic from the core message flow, it prevents maintenance changes in filtering rules from triggering massive reworks across the rolling appender infrastructure.
+- **Alternative Approaches: Centralized If-Else Logic**. While slightly faster, it would make the system closed to extension, violating the OCP principle and complicating the maintenance of feature-level dependencies.
 
 ---
 
@@ -163,10 +162,12 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 - Co-change analysis confirms maintenance clusters in rolling appenders and connection managers.
 - Some high co-change pairs have no direct imports, showing maintenance dependencies not visible from code structure alone.
 
-### Pattern Impact (to complete with Member 3)
+### Pattern Impact 
 
-- Pattern selection should account for dependency hotspots and co-change clusters to avoid isolated pattern descriptions.
-- Pattern alternatives should be checked against maintenance dependencies, especially in rolling appender areas.
+- **Hotspots as Abstractions:** The high frequency of imports for `Plugin.java` and `LogEvent.java` is a direct footprint of the Builder and Strategy patterns. `Plugin.java` acts as the registry for Builder-based injection, while `LogEvent` serves as the universal context for Strategy (Layout) and Chain of Responsibility (Filter) implementations.
+- **Decoupling Maintenance Clusters:** The Strategy (Rollover policies) and Chain of Responsibility (Filtering) patterns are specifically used to contain the "co-change clusters" found in rolling appenders. While sibling classes still evolve together, these patterns prevent maintenance coupling from leaking into the `log4j-api`.
+- **API Guardrails:** The Proxy Pattern in AbstractLogger manages the structural flow from `log4j-core` to `log4j-api`. It acts as a gatekeeper that enforces a separation of concerns, ensuring that the heavy implementation logic of the Core remains invisible to the public API.
+- **Design Trade-offs:** Alternatives like Inheritance or Hardcoded Logic were bypassed to avoid a "Class Explosion" and a more rigid dependency graph. The current pattern-centric design is the primary reason the system remains extensible despite its high maintenance complexity.
 
 ### Integration Notes
 
