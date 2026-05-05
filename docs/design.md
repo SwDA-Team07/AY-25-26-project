@@ -172,6 +172,7 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 ### Integration Notes
 
 - Dependencies findings are evidence-backed through `analysis/dependencies/*` artifacts.
-- Final Design summary should merge this section with the Patterns section in a single cohesive narrative.
+- Dependencies and Patterns are now integrated in a single cohesive summary.
+- Final coordinator pass should verify wording consistency and traceability links.
 
 ---

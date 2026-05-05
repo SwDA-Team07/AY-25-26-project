@@ -58,13 +58,13 @@ Please answer these questions directly:
 
 ## Decision log (to fill after feedback)
 
-- Stefano feedback received: [yes/no + date]
+- Stefano feedback received: yes, 2026-05-05
 - Filippo feedback received: yes, 2026-05-02
 - Changes to apply to `docs/design.md`:
-  - fix relative links;
-  - simplify wording where needed;
-  - update the Summary structure after Patterns are drafted.
-- Open items escalated to team: Stefano should connect Patterns with the dependency hotspots; final word count and links still need checking.
+  - fix relative links (done);
+  - simplify wording where needed (done);
+  - update the Summary structure after Patterns are drafted (done).
+- Open items escalated to team: final word count and links still need checking.
 
 ## Self-check before applying feedback
 
