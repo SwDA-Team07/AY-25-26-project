@@ -33,11 +33,11 @@ Please answer these questions directly:
 5. Suggest one paragraph for the final Design summary that links dependencies and patterns.
 
 
-- `Q1: ...`
-- `Q2: ...`
-- `Q3: ...`
-- `Q4: ...`
-- `Q5: ...`
+- `Q1: Builder is driven by Plugin.java (injection); Strategy centers on LogEvent.java (shared context); Proxy supports StatusLogger.java (API gatekeeping).`
+- `Q2: Yes. Inheritance alternatives would turn "co-change clusters" into rigid compilation dependencies, significantly increasing graph inconsistencies in rolling appenders.`
+- `Q3: Reference the 200+ imports of Plugin.java/LogEvent.java and the rolling appender co-change clusters to justify the current decoupled design.`
+- `Q4: Use "Extension Points" for Strategies/Plugins, "Maintenance Coupling" for Co-change clusters, and "Event Contract" for the Strategy Context (LogEvent).`
+- `Q5: Log4j2 uses Builder and Strategy to manage hotspots like Plugin.java, while Proxy and Chain of Responsibility shield the API from the maintenance coupling found in co-change clusters. We can choose one of them.`
 
 ## Feedback request to Filippo (Coordinator)
 

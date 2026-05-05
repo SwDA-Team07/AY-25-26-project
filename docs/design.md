@@ -116,7 +116,7 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 
 ### Pattern 1: Proxy Pattern
 - **Classes/Components Involved:**
-  - Abstract logger: **Proxy (The Gatekeeper)**
+  - AbstractLogger: **Proxy (The Gatekeeper)**
   - Logger: **Subject (The Interface)**
 - **Location:** log4j-api/.../spi/AbstractLogger.java
 - **Purpose:** It acts as an intermediary that intercepts logging calls to verify if a specific log level (e.g., DEBUG) is enabled before passing the data to the core engine.
@@ -141,7 +141,7 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 - **Why Used:** This pattern explains why `LogEvent.java` is a central dependency hotspot (217 total references). `LogEvent` serves as the common context passed to all Strategy implementations. This decoupling allows modules like `log4j-layout-template-json` to exist as external dependencies while remaining perfectly compatible with the Core.
 - **Alternative Approaches: Class Inheritance** Creating specialized Appenders for every format would lead to a "Class Explosion" and increase maintenance coupling within the core module.
 
-### Pattern 4: Chain of Responsability
+### Pattern 4: Chain of Responsibility
 - **Classes/Components Involved:**
   - CompositeFilter: **Chain Manager**
   - Filter: **Handler Interface**
