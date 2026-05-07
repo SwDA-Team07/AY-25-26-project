@@ -22,9 +22,9 @@ Questions for Stefano:
 2. How should we interpret the role of `AbstractLogger`: as an access-control/delegation layer, or as a shared base implementation for logger behavior, as abstract classes often do?
 3. Is Proxy still the strongest interpretation, or would Adapter/Singleton be easier to defend with the selected modules?
 
-`Q1:`
-`Q2:`
-`Q3:`
+`Q1: The RealSubject in the Proxy interpretation would be the log4j-core logger implementation (e.g., Logger.java). The Proxy (AbstractLogger) acts as a front-end to prevent the Core from processing logs that aren't enabled.`
+`Q2: It acts as an access-control layer. Its primary job is "short-circuiting"—deciding if a logging event should proceed to the expensive Core logic or stop immediately.`
+`Q3: While Proxy is defensible, the Adapter Pattern is stronger and easier to justify`
 
 Suggested action:
 
