@@ -113,7 +113,41 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 
 ## Patterns
 
+### Architectural Patterns Mapping
+| Pattern | Main classes/components | Module |
+| :--- | :--- | :--- |
+| **Adapter** | `Log4jLogger`, `org.slf4j.Logger`, `ExtendedLogger` | `log4j-slf4j2-impl` |
+| **Builder** | `ConsoleAppender.Builder`, `ConsoleAppender` | `log4j-core` |
+| **Strategy** | `Layout`, `PatternLayout`, `JsonLayout`, `LogEvent` | `log4j-core` |
+| **Chain of Resp.** | `CompositeFilter`, `Filter`, `ThresholdFilter` | `log4j-core` |
+---
 
+
+### Pattern 1: Adapter Pattern
+*   **Classes/Components Involved:**
+    *   **Adapter:** `Log4jLogger`
+    *   **Target (Interface):** `org.slf4j.Logger`
+    *   **Adaptee:** `org.apache.logging.log4j.Logger`
+*   **Location:** `log4j-slf4j2-impl/src/main/java/org/apache/logging/slf4j/Log4jLogger.java`
+*   **Structure:** 
+```mermaid
+classDiagram
+    class SLF4J_Logger {
+        <<interface>>
+    }
+    class Log4jLogger {
+        +info()
+    }
+    class ExtendedLogger {
+        +log()
+    }
+    SLF4J_Logger <|.. Log4jLogger : implements
+    Log4jLogger --> ExtendedLogger : adapts to
+```
+
+*   **Analysis**: It translates SLF4J calls into native Log4j2 API calls. This Object Adapter justifies the dependency flow from bridge modules to the core, enabling Log4j2 to act as a plug-and-play implementation for external facades.
+
+<<<<<<< HEAD
 ### Pattern 1: Proxy Pattern
 - **Classes/Components Involved:**
   - AbstractLogger: **Proxy (The Gatekeeper)**
@@ -149,8 +183,69 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 - **Purpose:** It passes a log event through a sequence of filters that can independently decide to accept, deny, or pass the event.
 - **Why Used:** The Chain of Responsibility is essential for managing the co-change clusters found in transport and connection managers. By decoupling filtering logic from the core message flow, it prevents maintenance changes in filtering rules from triggering massive reworks across the rolling appender infrastructure.
 - **Alternative Approaches: Centralized If-Else Logic**. While slightly faster, it would make the system closed to extension, violating the OCP principle and complicating the maintenance of feature-level dependencies.
+=======
 
----
+### Pattern 2: Builder Pattern
+*   **Classes/Components Involved:**
+    *   **Builder:** `ConsoleAppender.Builder`
+    *   **Product:** `ConsoleAppender`
+*   **Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/appender/ConsoleAppender.java`
+*   **Structure:** 
+```mermaid
+graph LR
+    B[ConsoleAppender.Builder] -->|build| P[ConsoleAppender]
+```
+
+*   **Analysis:** It manages the construction of complex Appenders with multiple optional parameters. This pattern is a primary driver for the Plugin.java hotspot, as the plugin system uses these builders to perform dynamic dependency injection.
+
+### Pattern 3: Strategy Pattern
+*   **Classes/Components Involved:**
+    *   **Strategy Interface:** `Layout`
+    *   **Concrete Strategies:** `PatternLayout`, `JsonLayout`
+    *   **Context:** `Appender`
+*   **Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/Layout.java`
+*   **Structure:** 
+```mermaid
+classDiagram
+    class Appender {
+        -Layout layout
+        +append(LogEvent event)
+    }
+    class Layout {
+        <<interface>>
+        +toSerializable(LogEvent event)
+    }
+    class JSONLayout {
+        +toSerializable(LogEvent event)
+    }
+    class PatternLayout {
+        +toSerializable(LogEvent event)
+    }
+
+    Appender o-- Layout : "delegates formatting"
+    Layout <|.. JSONLayout : "implements"
+    Layout <|.. PatternLayout : "implements"
+```
+*   **Analysis:** It makes formatting algorithms interchangeable. The LogEvent acts as the universal immutable context passed to every strategy, directly explaining its status as a high-frequency dependency hotspot.
+
+### Pattern 4: Chain of Responsibility
+*   **Classes/Components Involved:**
+    *   **Chain Manager:** `CompositeFilter`
+    *   **Handler Interface:** `Filter`
+    *   **Concrete Handlers:** `ThresholdFilter`, `RegexFilter`
+*   **Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/filter/CompositeFilter.java`
+*   **Structure:** 
+```mermaid
+graph LR
+    Event --> Filter1
+    Filter1 -->|Neutral| Filter2
+    Filter2 -->|Accept| Appender
+    Filter1 -->|Deny| Discard
+```
+*   **Analysis:** It allows sequential processing of log events. By decoupling filtering from the logging pipeline, it contains maintenance complexity within specific feature sets, preventing changes in co-change clusters from affecting the core API.
+
+>>>>>>> c971ebb (design.md updated following change requests)
+
 
 ## Summary
 
@@ -164,10 +259,10 @@ Inputs that should be reflected by the Patterns owner and in the final Design su
 
 ### Pattern Impact 
 
-- **Hotspots as Abstractions:** The high frequency of imports for `Plugin.java` and `LogEvent.java` is a direct footprint of the Builder and Strategy patterns. `Plugin.java` acts as the registry for Builder-based injection, while `LogEvent` serves as the universal context for Strategy (Layout) and Chain of Responsibility (Filter) implementations.
-- **Decoupling Maintenance Clusters:** The Strategy (Rollover policies) and Chain of Responsibility (Filtering) patterns are specifically used to contain the "co-change clusters" found in rolling appenders. While sibling classes still evolve together, these patterns prevent maintenance coupling from leaking into the `log4j-api`.
-- **API Guardrails:** The Proxy Pattern in AbstractLogger manages the structural flow from `log4j-core` to `log4j-api`. It acts as a gatekeeper that enforces a separation of concerns, ensuring that the heavy implementation logic of the Core remains invisible to the public API.
-- **Design Trade-offs:** Alternatives like Inheritance or Hardcoded Logic were bypassed to avoid a "Class Explosion" and a more rigid dependency graph. The current pattern-centric design is the primary reason the system remains extensible despite its high maintenance complexity.
+- **Managed Hotspots (Builder & Strategy):** Static analysis reveals high reference counts for Plugin.java and LogEvent.java, which align with structural design choices. The Builder Pattern allows the plugin system to inject dependencies dynamically, concentrating references in the plugin loader. Similarly, the Strategy Pattern (Layouts) requires LogEvent as a shared context object, naturally making it a central dependency for any formatting component.
+- **Interoperability (Adapter):** The Adapter Pattern found in log4j-slf4j2-impl provides the structural bridge between external facades and the internal engine. By adapting the SLF4J interface to the native ExtendedLogger API, this pattern facilitates interoperability without necessitating changes to the core library's architecture.
+- **Maintenance Isolation (Chain of Responsibility):** The use of the Chain of Responsibility for filtering logic helps explain the presence of "co-change clusters" in the maintenance data. By decoupling specific feature-level logic from the main logging pipeline, the architecture contains the impact of frequent modifications, preventing maintenance ripple effects from reaching the stable log4j-api.
+- **Architectural Rationale:** The selection of these patterns suggests a preference for composition over rigid class inheritance. This approach helps manage the complexity of a highly configurable framework, maintaining a separation between the public-facing API and the modular, frequently evolving core implementation.
 
 ### Integration Notes
 
