@@ -86,12 +86,22 @@ Suggested action:
 
 ## Required Pattern Changes
 
-- [ ] Answer the Proxy Pattern questions and keep Proxy only if the mapping is clearly justified.
-- [ ] If Proxy is replaced, prefer Adapter in `log4j-slf4j2-impl` or Singleton in `StatusLogger`.
-- [ ] Add a short summary table immediately after the `## Patterns` heading.
-- [ ] Add a short explanation of the concrete interaction between the classes of each pattern.
-- [ ] Add small Mermaid diagrams where they make the pattern structure easier to understand.
+- [x] Answer the Proxy Pattern questions and keep Proxy only if the mapping is clearly justified.
+- [x] If Proxy is replaced, prefer Adapter in `log4j-slf4j2-impl` or Singleton in `StatusLogger`.
+- [x] Add a short summary table immediately after the `## Patterns` heading.
+- [ ] Add a short and clear explanation of the concrete interaction between the classes of each pattern.
+- [x] Add small Mermaid diagrams where they make the pattern structure easier to understand.
 - [ ] Use precise file paths for the main pattern examples.
-- [ ] Soften overstrong claims and keep dependency-hotspot links evidence-based.
-- [ ] Check that every pattern example belongs to the selected five-module scope.
-- [ ] Update the Pattern Impact summary after changing the Patterns section.
+- [x] Make strong claims more cautious, especially when linking patterns to dependency hotspots.
+- [x] Check that every pattern example belongs to the selected five-module scope.
+- [x] Update the Pattern Impact summary after changing the Patterns section.
+
+## Follow-up After Stefano's Revision
+
+The main requested changes were applied correctly: Proxy was replaced with Adapter, the Patterns section now has a summary table, Mermaid diagrams were added, and the Summary no longer references Proxy.
+
+Remaining refinements before final freeze:
+
+- [ ] Fix the Adapter roles so they are consistent everywhere: `Log4jLogger` = Adapter, SLF4J logger interface = Target, `ExtendedLogger` / Log4j API = Adaptee. Do not use `org.apache.logging.log4j.Logger` in one place and `ExtendedLogger` in another without explaining the difference.
+- [ ] Fix the class name typo in the Strategy diagram: use `JsonLayout`, not `JSONLayout`.
+- [ ] Clarify the Strategy example: explain that appenders use a `Layout` to format each `LogEvent`. If `Appender` is too generic, use a concrete appender class as the context.
