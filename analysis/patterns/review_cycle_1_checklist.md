@@ -44,8 +44,17 @@ Suggested action:
 - Add a short summary table immediately after the `## Patterns` heading, before the detailed explanations of individual patterns. Without this table, the section is harder to understand at first reading.
 - For each pattern, add one short sentence explaining the concrete interaction between the involved classes.
 - Make clear why the example is a real instance of that pattern, not only a generic similarity.
+- For each pattern, explicitly answer which problem the pattern solves in Log4j2.
+- For each pattern, include one reasonable alternative design and briefly state its pros and cons.
 - When helpful, add a small Mermaid diagram to show the class relationship or call flow.
 - Keep diagrams small, so they support the text without making the section too long.
+
+Suggested per-pattern structure:
+
+- **Problem solved:** explain the concrete design problem addressed by the pattern.
+- **Alternative:** name one plausible alternative design.
+- **Pros:** explain what the alternative would improve.
+- **Cons:** explain what the alternative would make worse compared with the current pattern.
 
 Suggested summary table format:
 
@@ -90,6 +99,9 @@ Suggested action:
 - [x] If Proxy is replaced, prefer Adapter in `log4j-slf4j2-impl` or Singleton in `StatusLogger`.
 - [x] Add a short summary table immediately after the `## Patterns` heading.
 - [ ] Add a short and clear explanation of the concrete interaction between the classes of each pattern.
+- [ ] Add a clear "Problem solved" explanation for each pattern.
+- [ ] Add one alternative design for each pattern.
+- [ ] Add concise pros and cons for each alternative.
 - [x] Add small Mermaid diagrams where they make the pattern structure easier to understand.
 - [ ] Use precise file paths for the main pattern examples.
 - [x] Make strong claims more cautious, especially when linking patterns to dependency hotspots.
@@ -105,3 +117,4 @@ Remaining refinements before final freeze:
 - [ ] Fix the Adapter roles so they are consistent everywhere: `Log4jLogger` = Adapter, SLF4J logger interface = Target, `ExtendedLogger` / Log4j API = Adaptee. Do not use `org.apache.logging.log4j.Logger` in one place and `ExtendedLogger` in another without explaining the difference.
 - [ ] Fix the class name typo in the Strategy diagram: use `JsonLayout`, not `JSONLayout`.
 - [ ] Clarify the Strategy example: explain that appenders use a `Layout` to format each `LogEvent`. If `Appender` is too generic, use a concrete appender class as the context.
+- [ ] Expand each pattern entry with: problem solved, alternative design, pros, and cons.
