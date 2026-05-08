@@ -1,6 +1,6 @@
 # Software Architecture — Apache Log4j2
 
-**C4 Model Tool Used:** [Specify the tool(s) used - e.g., PlantUML, Structurizr, draw.io, etc.]
+**C4 Model Tool Used:** Mermaid diagrams embedded in Markdown.
 
 ---
 
@@ -41,7 +41,7 @@
 ## Component Level (C3)
 
 ### Component Diagrams
-[Include C3 Component diagrams for main containers. Motivate any decisions if you need to discard or simplify specific containers due to complexity.]
+[Include C3 Component diagrams for the most relevant containers. If some containers are not expanded, explain why.]
 
 #### Container: [Container Name]
 
@@ -54,11 +54,11 @@
 
 ### SOLID Principles Analysis at Level 3
 
-[Analyze if violations of SOLID principles are observed at the component level:]
+[Analyze whether any SOLID violations are observed at component level. If none are strong enough, explain the main SOLID-related trade-offs.]
 
-#### SOLID Violations Detected:
-- [Violation 1]: [Explanation and location]
-- [Violation 2]: [Explanation and location]
+#### SOLID Findings:
+- [Finding 1]: [Violation, trade-off, or strength with explanation and location]
+- [Finding 2]: [Violation, trade-off, or strength with explanation and location]
 
 ---
 
