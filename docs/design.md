@@ -147,7 +147,6 @@ classDiagram
 
 *   **Analysis**: It translates SLF4J calls into native Log4j2 API calls. This Object Adapter justifies the dependency flow from bridge modules to the core, enabling Log4j2 to act as a plug-and-play implementation for external facades.
 
-<<<<<<< HEAD
 ### Pattern 1: Proxy Pattern
 - **Classes/Components Involved:**
   - AbstractLogger: **Proxy (The Gatekeeper)**
@@ -183,7 +182,6 @@ classDiagram
 - **Purpose:** It passes a log event through a sequence of filters that can independently decide to accept, deny, or pass the event.
 - **Why Used:** The Chain of Responsibility is essential for managing the co-change clusters found in transport and connection managers. By decoupling filtering logic from the core message flow, it prevents maintenance changes in filtering rules from triggering massive reworks across the rolling appender infrastructure.
 - **Alternative Approaches: Centralized If-Else Logic**. While slightly faster, it would make the system closed to extension, violating the OCP principle and complicating the maintenance of feature-level dependencies.
-=======
 
 ### Pattern 2: Builder Pattern
 *   **Classes/Components Involved:**
@@ -244,7 +242,6 @@ graph LR
 ```
 *   **Analysis:** It allows sequential processing of log events. By decoupling filtering from the logging pipeline, it contains maintenance complexity within specific feature sets, preventing changes in co-change clusters from affecting the core API.
 
->>>>>>> c971ebb (design.md updated following change requests)
 
 
 ## Summary
