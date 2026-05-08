@@ -64,8 +64,8 @@ Please answer these questions directly:
   - [x] Fix relative links.
   - [x] Simplify wording where needed.
   - [x] Update the Summary structure after Patterns are drafted.
-  - [ ] Replace personal paths in `analysis/dependencies/README.md` with generic placeholders.
-  - [ ] Make the reproduction command generic, or mark it as an owner-specific example.
+  - [x] Replace personal paths in `analysis/dependencies/README.md` with generic placeholders.
+  - [x] Make the reproduction command generic, or mark it as an owner-specific example.
 
 ## Self-check before applying feedback
 
