@@ -152,6 +152,8 @@ classDiagram
 *   **Cons:** Couples the Log4j2 core to an external API's lifecycle, potentially limiting the evolution of native features.
 *   **Hotspot Link:** Explains the incoming dependencies from `log4j-slf4j2-impl` to the core `ExtendedLogger`.
 
+
+
 ### Pattern 2: Builder Pattern
 *   **Classes/Components Involved:**
     *   **Builder:** `org.apache.logging.log4j.core.appender.ConsoleAppender.Builder`
@@ -239,13 +241,10 @@ graph LR
 
 ### Pattern Impact 
 
-<<<<<<< HEAD
 - **Managed Hotspots (Builder & Strategy):** Static analysis reveals high reference counts for `Plugin.java` and `LogEvent.java`, which align with structural design choices. The Builder Pattern allows the plugin system to inject dependencies dynamically, concentrating references in the plugin loader. Similarly, the Strategy Pattern (Layouts) requires LogEvent as a shared context object, naturally making it a central dependency for any formatting component.
 - **Interoperability (Adapter):** The Adapter Pattern found in `log4j-slf4j2-impl` provides the structural bridge between external facades and the internal engine. By adapting the SLF4J interface to the native `ExtendedLogger` API, this pattern facilitates interoperability without necessitating changes to the core library's architecture.
-=======
 - **Managed Hotspots (Builder & Strategy):** Static analysis reveals high reference counts for `Plugin.java` and `LogEvent.java`, which align with structural design choices. The Builder Pattern allows the plugin system to inject dependencies dynamically, concentrating references in the plugin loader. Similarly, the Strategy Pattern (Layouts) requires `LogEvent` as a shared context object, naturally making it a central dependency for any formatting component.
 - **Interoperability (Adapter):** The Adapter Pattern found in `log4j-slf4j2-impl` provides the structural bridge between external facades and the internal engine. By adapting the SLF4J interface to the native ExtendedLogger API, this pattern facilitates interoperability without necessitating changes to the core library's architecture.
->>>>>>> 8416950faf3c76e9050f35a2027e05017c854ab0
 - **Maintenance Isolation (Chain of Responsibility):** The use of the Chain of Responsibility for filtering logic helps explain the presence of "co-change clusters" in the maintenance data. By decoupling specific feature-level logic from the main logging pipeline, the architecture contains the impact of frequent modifications, preventing maintenance ripple effects from reaching the stable `log4j-api`.
 - **Architectural Rationale:** The selection of these patterns suggests a preference for composition over rigid class inheritance. This approach helps manage the complexity of a highly configurable framework, maintaining a separation between the public-facing API and the modular, frequently evolving core implementation.
 
