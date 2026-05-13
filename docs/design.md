@@ -145,17 +145,14 @@ classDiagram
     Log4jLogger --> ExtendedLogger : adapts to
 ```
 
-<<<<<<< HEAD
 *   **Analysis**: It translates SLF4J facade invocations into native Log4j2 API calls. This delegation enables interoperability between different logging frameworks, explaining the dependency flow from bridge modules toward the core implementation.
 *   **Problem Solved:** Addresses the interface mismatch between the SLF4J standard and the Log4j2 internal API, allowing applications to switch backends without code changes.
 *   **Alternative: Direct Implementation.** Log4j2 could natively implement the SLF4J interface.
 *   **Pros:** Reduces architectural layers and eliminates the need for a separate bridge module.
 *   **Cons:** Couples the Log4j2 core to an external API's lifecycle, potentially limiting the evolution of native features.
 *   **Hotspot Link:** Explains the incoming dependencies from `log4j-slf4j2-impl` to the core `ExtendedLogger`.
-=======
-*   **Analysis**: It translates SLF4J calls into native Log4j2 API calls. This Object Adapter justifies the dependency flow from bridge modules to the core, enabling Log4j2 to act as a plug-and-play implementation for external facades.
 
->>>>>>> 8416950faf3c76e9050f35a2027e05017c854ab0
+
 
 ### Pattern 2: Builder Pattern
 *   **Classes/Components Involved:**
