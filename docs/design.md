@@ -165,7 +165,7 @@ graph LR
     B[ConsoleAppender.Builder] -->|build| P[ConsoleAppender]
 ```
 
-*   **Analysis:** It standardizes the construction of complex components by validating configuration parameters before instantiation. Since every Builder is registered as a Plugin, this pattern centralizes imports toward Plugin.java for dynamic dependency injection.
+*   **Analysis:** It standardizes the construction of complex components by validating configuration parameters before instantiation. Since every Builder is registered as a Plugin, this pattern centralizes imports toward `Plugin.java` for dynamic dependency injection.
 *   **Problem Solved:** Manages the instantiation of complex components (Appenders) that require multiple optional configuration parameters without resorting to large, rigid constructors.
 *   **Alternative: JavaBeans Pattern (Setters).** Using a default constructor followed by setter methods.
 *   **Pros:** Simplifies the codebase by removing the nested Builder classes.
@@ -241,8 +241,6 @@ graph LR
 
 ### Pattern Impact 
 
-- **Managed Hotspots (Builder & Strategy):** Static analysis reveals high reference counts for `Plugin.java` and `LogEvent.java`, which align with structural design choices. The Builder Pattern allows the plugin system to inject dependencies dynamically, concentrating references in the plugin loader. Similarly, the Strategy Pattern (Layouts) requires LogEvent as a shared context object, naturally making it a central dependency for any formatting component.
-- **Interoperability (Adapter):** The Adapter Pattern found in `log4j-slf4j2-impl` provides the structural bridge between external facades and the internal engine. By adapting the SLF4J interface to the native `ExtendedLogger` API, this pattern facilitates interoperability without necessitating changes to the core library's architecture.
 - **Managed Hotspots (Builder & Strategy):** Static analysis reveals high reference counts for `Plugin.java` and `LogEvent.java`, which align with structural design choices. The Builder Pattern allows the plugin system to inject dependencies dynamically, concentrating references in the plugin loader. Similarly, the Strategy Pattern (Layouts) requires `LogEvent` as a shared context object, naturally making it a central dependency for any formatting component.
 - **Interoperability (Adapter):** The Adapter Pattern found in `log4j-slf4j2-impl` provides the structural bridge between external facades and the internal engine. By adapting the SLF4J interface to the native ExtendedLogger API, this pattern facilitates interoperability without necessitating changes to the core library's architecture.
 - **Maintenance Isolation (Chain of Responsibility):** The use of the Chain of Responsibility for filtering logic helps explain the presence of "co-change clusters" in the maintenance data. By decoupling specific feature-level logic from the main logging pipeline, the architecture contains the impact of frequent modifications, preventing maintenance ripple effects from reaching the stable `log4j-api`.
