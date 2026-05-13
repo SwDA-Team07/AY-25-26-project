@@ -60,11 +60,12 @@ Please answer these questions directly:
 
 - Stefano feedback received: yes, 2026-05-05
 - Filippo feedback received: yes, 2026-05-02
-- Changes to apply to `docs/design.md`:
-  - fix relative links (done);
-  - simplify wording where needed (done);
-  - update the Summary structure after Patterns are drafted (done).
-- Open items escalated to team: final word count and links still need checking.
+- Changes already applied to `docs/design.md`:
+  - [x] Fix relative links.
+  - [x] Simplify wording where needed.
+  - [x] Update the Summary structure after Patterns are drafted.
+  - [x] Replace personal paths in `analysis/dependencies/README.md` with generic placeholders.
+  - [x] Make the reproduction command generic, or mark it as an owner-specific example.
 
 ## Self-check before applying feedback
 

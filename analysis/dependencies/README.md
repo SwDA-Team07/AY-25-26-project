@@ -4,7 +4,7 @@ This folder contains reproducible evidence for the **Dependencies** part of `doc
 
 ## Locked Baseline
 
-- Source repository: `C:\Users\cekur\Documents\GitHub\logging-log4j2`
+- Source repository: local clone of `logging-log4j2` (set by each user, e.g., `/path/to/logging-log4j2` or `C:\path\to\logging-log4j2`)
 - Source branch: `2.x`
 - Source commit: `83702bb6194182572eccf6594acf935f83437e76`
 - Co-change window: `2025-04-12` to `2026-04-12`
@@ -46,11 +46,22 @@ This folder contains reproducible evidence for the **Dependencies** part of `doc
 
 Run from project repo root (`AY-25-26-project`):
 
+```bash
+python tools/scripts/generate_dependency_analysis.py \
+  --source-repo "/path/to/logging-log4j2" \
+  --output-dir "analysis/dependencies" \
+  --baseline-commit 83702bb6194182572eccf6594acf935f83437e76 \
+  --branch 2.x \
+  --since-date 2025-04-12 \
+  --window-end 2026-04-12
+```
+
+Windows PowerShell equivalent:
+
 ```powershell
-& "C:\Users\cekur\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" `
-  tools\scripts\generate_dependency_analysis.py `
-  --source-repo "C:\Users\cekur\Documents\GitHub\logging-log4j2" `
-  --output-dir "C:\Users\cekur\IdeaProjects\AY-25-26-project\analysis\dependencies" `
+python tools/scripts/generate_dependency_analysis.py `
+  --source-repo "C:\path\to\logging-log4j2" `
+  --output-dir "analysis\dependencies" `
   --baseline-commit 83702bb6194182572eccf6594acf935f83437e76 `
   --branch 2.x `
   --since-date 2025-04-12 `
