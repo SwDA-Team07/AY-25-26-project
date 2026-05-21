@@ -1,0 +1,11 @@
+flowchart LR
+    subgraph JDBC2["log4j-jdbc-dbcp2"]
+        PCS[PoolingDriverConnectionSource]
+        DBCP[Apache Commons DBCP pool]
+    end
+    JA[JDBC Appender in log4j-core]
+    DB[(Relational database)]
+    JA -->|requests connections from| PCS
+    PCS -->|manages pooled connections via| DBCP
+    DBCP -->|opens JDBC connections to| DB
+    JA -->|writes log events as rows into| DB
