@@ -144,50 +144,109 @@ flowchart TB
     Async -->|processes log events asynchronously| App
 ```
  
-#### Diagram of Log4J-API
+#### Diagram of log4j-api
 
 ```mermaid
-flowchart TD
-    subgraph INTEGRATIONS["Adapter and Integration Modules"]
-        JCL[log4j-jcl]
-        JUL[log4j-jul]
-        SLF1[log4j-slf4j-impl]
-        SLF2[log4j-slf4j2-impl]
-        TOJUL[log4j-to-jul]
-        TOSLF[log4j-to-slf4j]
-        JPL[log4j-jpl]
+flowchart TB
+    subgraph API["log4j-api"]
+        LM[LogManager]
+        LF[LoggerFactory / Provider]
+        L[Logger API]
+        EL[ExtendedLogger]
+        MF[MessageFactory]
+        MSG[Message]
+        SL[SimpleLogger]
+        SLG[StatusLogger]
+        LE[LogEvent contract]
     end
-    API[Log4j API]
-    EXT[External Logging Systems]
-    SLF[SLF4J]
-    JCL -->|bridges Commons Logging| API
-    JUL -->|bridges java.util.logging| API
-    SLF1 -->|bridges SLF4J 1.x| API
-    SLF2 -->|bridges SLF4J 2.x| API
-    JPL -->|bridges System.Logger| API
-    TOJUL -->|forwards log events| EXT
-    TOSLF -->|forwards log events| SLF
+    APP[Application Code]
+    APP -->|requests logger| LM
+    LM -->|locates provider| LF
+    LF -->|creates| L
+    L -->|extended by| EL
+    L -->|builds messages via| MF
+    MF -->|produces| MSG
+    LM -.->|fallback when no core present| SL
+    API -.->|internal diagnostics published to| SLG
+    L -->|emits| LE
 ```
-#### Diagram of Databases, Integrations And Systems
+
+#### Diagram of log4j-layout-template-json
+
 ```mermaid
 flowchart TB
-    subgraph DATABASES["Database / Integrations / Systems"]
-        Cas[log4j-cassandra]
-        Couch[log4j-couchdb]
-        Mongo[log4j-mongodb]
-        JDBC[log4j-jdbc-dbcp2]
-        JPA[log4j-jpa]
-        Docker[log4j-docker]
+    subgraph LTJ["log4j-layout-template-json"]
+        JTL[JsonTemplateLayout]
+        TR[TemplateResolver]
+        ER[EventResolver registry]
+        ERS[Built-in EventResolvers]
+        JW[JsonWriter]
     end
-    Appender[Appender System]
-    Cas -->|stores log events in Cassandra| Appender
-    Couch -->|provides CouchDB integration| Appender
-    Mongo -->|stores log events in MongoDB| Appender
-    JDBC -->|provides JDBC data source| Appender
-    JPA -->|persists log events via JPA| Appender
-    Lookup[Lookup System]
-    Docker -->|provides Docker environment lookups| Lookup
+    LE[(LogEvent from log4j-api)]
+    LSPI[Layout SPI in log4j-core]
+    APP[Appender in log4j-core]
+    LSPI -->|extension point implemented by| JTL
+    JTL -->|delegates field resolution to| TR
+    TR -->|looks up resolvers in| ER
+    ER -->|provides| ERS
+    ERS -->|read fields from| LE
+    JTL -->|serializes output via| JW
+    APP -->|calls layout to format| JTL
 ```
+
+#### Diagram of log4j-slf4j2-impl
+
+```mermaid
+flowchart LR
+    subgraph SLF2["log4j-slf4j2-impl"]
+        SP[Log4jServiceProvider]
+        LF[Log4jLoggerFactory]
+        LL[Log4jLogger - Adapter]
+        MF[Log4jMarkerFactory]
+        MDC[Log4jMDCAdapter]
+    end
+    SLF4J[SLF4J 2 API - Target]
+    API[ExtendedLogger - log4j-api - Adaptee]
+    SLF4J -->|discovers provider via ServiceLoader| SP
+    SP -->|exposes| LF
+    LF -->|creates| LL
+    LL -->|delegates calls to| API
+    SLF4J -->|markers handled by| MF
+    SLF4J -->|MDC handled by| MDC
+```
+
+#### Diagram of log4j-jdbc-dbcp2
+
+```mermaid
+flowchart LR
+    subgraph JDBC2["log4j-jdbc-dbcp2"]
+        PCS[PoolingDriverConnectionSource]
+        DBCP[Apache Commons DBCP pool]
+    end
+    JA[JDBC Appender in log4j-core]
+    DB[(Relational database)]
+    JA -->|requests connections from| PCS
+    PCS -->|manages pooled connections via| DBCP
+    DBCP -->|opens JDBC connections to| DB
+    JA -->|writes log events as rows into| DB
+```
+
+#### Scope Overview
+
+```mermaid
+flowchart TB
+    API[log4j-api]
+    CORE[log4j-core]
+    LTJ[log4j-layout-template-json]
+    SLF2[log4j-slf4j2-impl]
+    JDBC[log4j-jdbc-dbcp2]
+    CORE -->|816 import edges - implements| API
+    LTJ -->|implements Layout SPI of| CORE
+    JDBC -->|provides connection source to JDBC Appender in| CORE
+    SLF2 -->|adapts SLF4J 2 calls onto| API
+```
+
+The 816 cross-module import edges between `log4j-core` and `log4j-api` and the central hotspots `Plugin.java`, `LogEvent.java`, and `StatusLogger.java` (see [`analysis/dependencies/architecture_handoff_packet.md`](../analysis/dependencies/architecture_handoff_packet.md)) confirm that the API/Core split is the main extensibility boundary, while the three peripheral modules plug into that boundary via the `Layout`, `Appender`, and provider SPIs.
 
 
 ### Container: log4j-api
@@ -228,63 +287,53 @@ Components:
 7. Async Logger
    - Responsibility: Provides asynchronous log event processing.
 
-### Container: Integration Modules
+### Container: log4j-layout-template-json
 
 #### Container Description
-The Integration Modules container gives oppurtinity for interoperability between Log4j2 and external logging frameworks and APIs. These modules act as bridges that allow applications using other logging systems to integrate with the Log4j2 architecture.
+The `log4j-layout-template-json` container provides a fast, garbage-free `Layout` implementation that serializes a `LogEvent` into JSON according to a user-supplied template. It plugs into the Layout SPI exposed by `log4j-core` and is the recommended layout for modern observability pipelines (ELK, OpenSearch, Loki) where structured rather than free-text output is required.
 
 **Components:**
 
-1. **log4j-jcl**
-   - Responsibility: The log4j-jcl artifact contains a bridge from Apache Commons Logging and the Log4j API.
-2. **log4j-jul**
-   - Responsibility: The log4j-jul artifact contains a bridge from java.util.logging to the Log4j API.
-3. **log4j-slf4j2-impl**
-   - Responsibility: The log4j-slf4j2-impl artifact contains a bridge from SLF4J 2 API to the Log4j API.
-4. **log4j-slf4j-impl**
-   - Responsibility: The log4j-slf4j-impl artifact contains a bridge from SLF4J 1 API to the Log4j API.
-5. **log4j-to-jul**
-   - Responsibility: The log4j-jul artifact contains an implementation of the Log4j API that logs to java.util.logging.
-6. **log4j-to-slf4j**
-   - Responsibility: The log4j-jul artifact contains an implementation of the Log4j API that logs to SLF4J API.
+1. **JsonTemplateLayout**
+   - Responsibility: Entry point implementing the core `Layout` interface; orchestrates template parsing and event serialization.
+2. **TemplateResolver / EventResolver registry**
+   - Responsibility: Parses the JSON template once at startup and binds each placeholder to a resolver that knows how to read a specific field from a `LogEvent`.
+3. **Built-in EventResolvers**
+   - Responsibility: Provide out-of-the-box resolution for common fields (timestamp, level, message, thread, MDC, exception, stack trace).
+4. **JsonWriter**
+   - Responsibility: Low-allocation JSON encoder used by resolvers to write output buffers efficiently.
 
-### Container: Database Integrations and Other Integrations
+### Container: log4j-slf4j2-impl
 
 #### Container Description
-The Database Integrations and Other Integrations container contains appenders with providers for storing log events in external databases and other systems such as Cassandra, MongoDB and CouchDB databases. For other systems, JDBC-based platforms.
+The `log4j-slf4j2-impl` container is the **Adapter** between the SLF4J 2 API and the Log4j2 API. Applications that program against SLF4J can switch to Log4j2 as the runtime backend simply by placing this artifact on the classpath; the SLF4J `ServiceLoader` discovery then routes every SLF4J call into `log4j-api`.
 
 **Components:**
 
-1. **log4j-cassandra**
-   - Responsibility: The log4j-cassandra artifact contains an appender for the Apache Cassandra database.
-2. **log4j-couchdb**
-   - Responsibility: The log4j-couchdb artifact contains a provider to connect the NoSQL Appender with the Apache CouchDB database.
-3. **log4j-mongodb**
-   - Responsibility: The log4j-mongodb artifact contains a provider to connect the NoSQL Appender with the MongoDB database. It is based on the latest version of the Java driver.
-2. **log4j-jdbc-dbcp2**
-   - Responsibility: The log4j-jdbc-dbcp2 artifact contains a data source for the JDBC Appender that uses Apache Commons DBCP.
+1. **Log4jServiceProvider**
+   - Responsibility: SLF4J 2 service provider entry point; discovered via `ServiceLoader` and exposes the factory and adapters to SLF4J.
+2. **Log4jLoggerFactory**
+   - Responsibility: Creates SLF4J `Logger` instances backed by Log4j2.
+3. **Log4jLogger (Adapter)**
+   - Responsibility: Adapts each SLF4J `Logger` call to the corresponding `ExtendedLogger` call in `log4j-api`.
+4. **Log4jMarkerFactory / Log4jMDCAdapter**
+   - Responsibility: Bridge SLF4J marker and MDC concepts onto the Log4j2 equivalents.
 
-### Container: Environment (and Platform) Integrations
+### Container: log4j-jdbc-dbcp2
 
 #### Container Description
-The Environment Integrations container contains environment-specific extensions and lookup utilities that enable Log4j2 to interact with platform-level runtime information with infrastructure services.
+The `log4j-jdbc-dbcp2` container supplies a pooled JDBC `ConnectionSource` for the JDBC Appender defined in `log4j-core`. It uses Apache Commons DBCP 2 to keep connection acquisition cheap when log events are persisted to a relational database.
 
 **Components:**
 
-1. **log4j-docker**
-   - Responsibility: The log4j-docker artifact contains a lookup for applications running in a Docker container.
+1. **PoolingDriverConnectionSource**
+   - Responsibility: Implements the `ConnectionSource` SPI expected by the JDBC Appender and hands out pooled connections.
+2. **Commons DBCP pool integration**
+   - Responsibility: Configures and manages the underlying connection pool (sizing, validation, eviction).
 
-### Container: Integration Extensions
+### Out-of-Scope Context
 
-#### Container Description
-The Integration Extensions container provides additional extension modules that expand Log4j2 functionality through external platform and framework integrations. 
-
-**Components:**
-   
-1. **log4j-jpa**
-   - Responsibility: The log4j-jpa artifact contains an appender for the Jakarta Persistence 2.2 API or Java Persistence API.   
-2. **log4j-jpl**
-   - Responsibility: The log4j-jpl artifact contains a bridge from System.Logger to the Log4j API.
+Log4j2 ships many additional modules (`log4j-jcl`, `log4j-jul`, `log4j-slf4j-impl`, `log4j-to-jul`, `log4j-to-slf4j`, `log4j-jpl`, `log4j-cassandra`, `log4j-couchdb`, `log4j-mongodb`, `log4j-jpa`, `log4j-docker`). They are intentionally **not** part of the C3 analysis: the five scoped modules already cover the API/Core boundary, a non-trivial Layout SPI implementation, an Adapter to an external logging facade, and an external system integration (JDBC), which is enough surface to discuss every architectural characteristic in scope.
 
 ### SOLID Principles Analysis at Level 3
 
