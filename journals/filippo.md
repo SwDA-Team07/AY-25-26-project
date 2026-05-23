@@ -71,8 +71,24 @@
 
 ---
 
+### 2026-05-18
+
+## **Activities:**
+
+* Prepared the first Architecture review checklist in [`analysis/architecture/review_cycle_1_checklist.md`](../analysis/architecture/review_cycle_1_checklist.md)
+* Reviewed the Architecture report against the selected Log4j2 scope
+* Listed follow-up feedback for Davide and Yaman
+
+**Contribution to reports:**
+
+* Overview: N/A
+* Design: N/A
+* Architecture: Coordinated the first Architecture review cycle by creating a checklist for [`docs/architecture.md`](../docs/architecture.md), focused on keeping C4 diagrams, SOLID findings, quality attributes, and summary content coherent with the selected analysis scope.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:** Project setup and full [`Overview`](../docs/overview.md) report draft, including scope explanation, stakeholders, statistics, and overview diagram.
 * **Design:** Coordinator review of the [`Design`](../docs/design.md) Dependencies and Patterns sections, including feedback checklists, follow-up tracking, evidence consistency, Summary alignment, and cleanup after merge conflict resolution.
-* **Architecture:** Architecture template preparation for Mermaid-based C4 diagrams and component-level SOLID analysis.
+* **Architecture:** Architecture template preparation for Mermaid-based C4 diagrams and component-level SOLID analysis, plus first-cycle Architecture review coordination through a scoped checklist for C1/C2, C3, SOLID, quality attributes, and summary completion.
