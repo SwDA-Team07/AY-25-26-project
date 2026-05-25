@@ -30,19 +30,19 @@ The Architecture review should stay limited to:
 
 ## Quick Status
 
-The Architecture report has a good C1/C2 base, but the lower-level part still needs a bigger pass. In particular, C3 must be brought back inside the selected scope, and the final quality/SOLID/summary sections still need to be completed or rewritten.
+The Architecture report has a good C1/C2 base, and the May 25 updates brought the C3 section back inside the selected scope. The main remaining work is now cleanup: improve the SOLID formatting, remove unnecessary out-of-scope discussion, strengthen evidence, and fix English wording issues before the report freeze.
 
 Current status:
 
 - [x] C4 tool declared.
 - [x] Context diagram and explanation present.
 - [x] Container diagram and explanation present.
-- [ ] Component diagrams and explanations aligned with the selected scope.
+- [x] Component diagrams and explanations aligned with the selected scope.
 - [x] Clean Architecture relationship discussed.
 - [ ] SOLID level 3 section cleaned up and tied to scoped components.
-- [ ] Architectural characteristics section completed.
-- [ ] Summary completed.
-- [ ] Scope exclusions clearly explained.
+- [x] Architectural characteristics section completed.
+- [x] Summary completed.
+- [x] Scope exclusions clearly explained.
 
 ## Feedback for Davide - C1/C2 and Quality Attributes
 
@@ -52,11 +52,13 @@ Questions for Davide:
 
 1. Could C1 briefly clarify that it shows the broad Log4j2 environment, while the detailed analysis focuses on the five selected modules?
 2. Can the missing quality attributes section be completed with concrete points such as maintainability, extensibility, performance/scalability, and interoperability?
+3. How should the Mermaid diagram files be handled? Should the separate `diagrams/` directory be removed to avoid duplication, or should it be kept and reorganized so that C1, C2, and C3 diagrams are stored under the correct C4-level folders?
 
 Suggested action:
 
 - Keep the current C1/C2 structure and only add the small scope clarification if it fits naturally.
 - Complete the quality attributes section using evidence from the Design report and the [`architecture_handoff_packet.md`](../dependencies/architecture_handoff_packet.md).
+- Decide whether `docs/architecture.md` should be the only source for Mermaid diagrams, or whether the separate `.mmd` files should be kept as source files and organized consistently.
 
 ## Feedback for Yaman - C3/SOLID
 
@@ -80,16 +82,39 @@ Suggested action:
 
 ## Required Architecture Changes
 
+### Completed after the May 25 updates
+
+- [x] Davide/Yaman: complete the Architectural Characteristics section with concrete quality attributes.
+- [x] Yaman: remove or mark out-of-scope modules in C3.
+- [x] Yaman: complete or remove the optional Coupling/Cohesion table.
+- [x] Yaman: replace the Summary placeholder with a final assessment.
+- [x] Yaman: make SOLID level 3 findings explicit as violations, strengths, or trade-offs.
+- [x] Yaman: reduce the SOLID findings to 3-4 clear scoped points.
+
+### Still open before final freeze
+
 - [ ] Davide: add the small C1/C2 clarifications only if they fit naturally.
-- [ ] Davide: complete the Architectural Characteristics section with concrete quality attributes.
-- [ ] Yaman: remove or mark out-of-scope modules in C3.
-- [ ] Yaman: complete or remove the optional Coupling/Cohesion table.
-- [ ] Yaman: replace the Summary placeholder with a final assessment.
-- [ ] Yaman: make SOLID level 3 findings explicit as violations, strengths, or trade-offs.
-- [ ] Yaman: reformat and reduce the SOLID findings to 3-4 clear scoped points.
-- [ ] Yaman: connect SOLID and quality claims to Design/dependency evidence.
+- [ ] Davide: decide how to resolve the duplicated Mermaid diagrams between `docs/architecture.md` and `diagrams/`.
+- [ ] Yaman: reformat the SOLID findings consistently and improve readability.
+- [ ] Yaman: connect SOLID and quality claims more clearly to Design/dependency evidence.
 - [ ] Both: check that the Architecture report reads coherently with Overview and Design.
 - [ ] Both: fix wording, typos, and relative links before final freeze.
+
+## Follow-up Corrections for Davide
+
+- [ ] Decide whether to remove the separate `diagrams/` directory or keep it as the source location for Mermaid diagrams.
+- [ ] If `diagrams/` is kept, reorganize it consistently by C4 level: C1 diagrams under `diagrams/context/`, C2 diagrams under `diagrams/container/`, and C3 diagrams under `diagrams/components/`.
+- [ ] If `.mmd` files are kept, make `docs/architecture.md` explicitly reference them or document that the inline Mermaid blocks are copies generated from those files.
+- [ ] Fix the current mismatch where `diagrams/context/` and `diagrams/container/` contain only `.gitkeep`, while all real diagram files are under `diagrams/components/`.
+
+## Follow-up Corrections for Yaman
+
+- [ ] Remove the current `Out-of-Scope Context` subsection from `docs/architecture.md`, or reduce it to one short sentence without listing every excluded module.
+- [ ] Reformat the SOLID findings so they are easier to scan, preferably as a table with columns such as **Finding**, **Type**, **Evidence**, and **Location**.
+- [ ] Recheck the Dependency Inversion finding and decide whether to keep it or remove it. If kept, make the evidence coherent: the `816 import edges` number clearly shows that `log4j-core` depends heavily on `log4j-api`, so it is good evidence for a strong API/Core relationship and for the central architectural role of `log4j-api`. However, it **does not prove** Dependency Inversion by itself. If that argument is not developed clearly, remove the finding or replace it with a more defensible one.
+- [ ] Include `log4j-jdbc-dbcp2` in the maintainability evidence if the section lists the scoped modules.
+- [ ] Fix English grammar and wording in the SOLID and Architectural Characteristics sections.
+- [ ] Use Markdown formatting consistently: bold key labels, wrap module/class names in backticks, and avoid plain quoted identifiers such as `"log4j-api"`.
 
 ## Self-check before applying feedback
 
