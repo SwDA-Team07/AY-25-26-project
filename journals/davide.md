@@ -35,8 +35,23 @@
 
 ---
 
+### 2026-05-26
+
+## **Activities:**
+
+* Converted the Context (C1) and Container (C2) diagrams in [`docs/architecture.md`](../docs/architecture.md) from generic Mermaid `flowchart` blocks to the dedicated Mermaid C4 syntax (`C4Context`, `C4Container`) per https://mermaid.js.org/syntax/c4.html, using proper element types (`Person`, `System`, `System_Ext`, `Container`, `System_Boundary`) and `Rel(...)` relationships.
+* Removed the [`diagrams/`](../diagrams/) directory in its entirety. Filippo confirmed in chat that Markdown-embedded Mermaid blocks cannot import external `.mmd` files, so the standalone sources under `diagrams/components/` (and the empty `context/` and `container/` placeholders) were only duplicating what is already inline in `architecture.md`. `docs/architecture.md` is now the single source of truth for all C4 diagrams.
+
+**Contribution to reports:**
+
+* Overview: No changes.
+* Design: No changes.
+* Architecture: Rewrote the C1 and C2 mermaid blocks using Mermaid C4 syntax; removed the `diagrams/` directory and the duplicated `.mmd` sources.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:** None.
 * **Design:** None.
-* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope and produced standalone Mermaid artifacts under `diagrams/components/`.
+* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope; converted C1 and C2 to Mermaid C4 syntax and consolidated all diagrams inline in `docs/architecture.md` by removing the duplicated `diagrams/` directory.
