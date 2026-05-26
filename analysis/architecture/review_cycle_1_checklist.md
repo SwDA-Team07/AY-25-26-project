@@ -25,6 +25,8 @@ The Architecture review should stay limited to:
   - C3 Component Level
   - SOLID Principles Analysis
   - Architectural Characteristics and Summary
+- [`analysis/architecture/c4_diagrams_review.md`](./c4_diagrams_review.md):
+  - focused review of C4 diagram consistency, boundaries, notation, and Mermaid files
 - [`analysis/dependencies/architecture_handoff_packet.md`](../dependencies/architecture_handoff_packet.md):
   - reusable dependency evidence for architecture claims
 
