@@ -8,28 +8,32 @@
 
 ### System Context Diagram
 ```mermaid
-flowchart LR
-    App[Applications / Libraries]
-    Ops[Ops and Security Teams]
-    SLF4J[SLF4J 2 API]
-    Log4j2[Apache Log4j2]
-      Config["Configuration Files (XML/JSON/YAML/Properties)"]
-    DestFile[File System]
-    DestConsole[Console]
-      DestNet["Network Endpoints (Syslog/HTTP/SMTP)"]
-    DestDb[JDBC Databases]
-    LogAgg[Log Aggregation / Monitoring]
+C4Context
+    title System Context Diagram for Apache Log4j2
 
-    App -->|logs via API| Log4j2
-    Ops -->|configure and monitor| Log4j2
-    SLF4J -->|bridged by log4j-slf4j2-impl| Log4j2
-    Config -->|provides configuration| Log4j2
+    Person(Ops, "Ops & Security Teams", "Configure and monitor the logging stack")
+    System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
+    System_Ext(SLF4J, "SLF4J 2 API", "Logging facade bridged to Log4j2")
+    System_Ext(Config, "Configuration Files", "XML / JSON / YAML / Properties")
 
-    Log4j2 -->|writes log events| DestFile
-    Log4j2 -->|writes log events| DestConsole
-    Log4j2 -->|writes log events| DestNet
-    Log4j2 -->|writes log events| DestDb
-    Log4j2 -->|forwards logs| LogAgg
+    System(Log4j2, "Apache Log4j2", "Java logging framework in scope of this analysis")
+
+    System_Ext(DestFile, "File System", "Log file destination")
+    System_Ext(DestConsole, "Console", "Standard output / error")
+    System_Ext(DestNet, "Network Endpoints", "Syslog / HTTP / SMTP")
+    System_Ext(DestDb, "JDBC Databases", "Relational database destinations")
+    System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
+
+    Rel(App, Log4j2, "logs via API")
+    Rel(Ops, Log4j2, "configure and monitor")
+    Rel(SLF4J, Log4j2, "bridged by log4j-slf4j2-impl")
+    Rel(Config, Log4j2, "provides configuration")
+
+    Rel(Log4j2, DestFile, "writes log events")
+    Rel(Log4j2, DestConsole, "writes log events")
+    Rel(Log4j2, DestNet, "writes log events")
+    Rel(Log4j2, DestDb, "writes log events")
+    Rel(Log4j2, LogAgg, "forwards logs")
 ```
 
 ### Context Description
@@ -46,30 +50,36 @@ events to files, consoles, network endpoints, databases, or monitoring stacks.
 
 ### Container Diagram
 ```mermaid
-flowchart TB
-    App[Applications / Libraries]
-    SLF4JClient[SLF4J 2 Clients]
-    Log4jApi[log4j-api]
-    Log4jCore[log4j-core]
-    JsonLayout[log4j-layout-template-json]
-    SLF4JImpl[log4j-slf4j2-impl]
-    JdbcDbcp2[log4j-jdbc-dbcp2]
-    DestFile[File System]
-    DestConsole[Console]
-    DestNet[Network Endpoints]
-    DestDb[JDBC Databases]
+C4Container
+    title Container Diagram for Apache Log4j2
 
-    App -->|uses logging API| Log4jApi
-    SLF4JClient -->|logs via SLF4J| SLF4JImpl
-    SLF4JImpl -->|delegates| Log4jApi
-    Log4jCore -->|implements| Log4jApi
-    Log4jCore -->|uses layouts| JsonLayout
-    Log4jCore -->|uses JDBC appender| JdbcDbcp2
+    System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
+    System_Ext(SLF4JClient, "SLF4J 2 Clients", "Applications using the SLF4J facade")
 
-    Log4jCore -->|writes log events| DestFile
-    Log4jCore -->|writes log events| DestConsole
-    Log4jCore -->|writes log events| DestNet
-    Log4jCore -->|writes log events| DestDb
+    System_Boundary(log4j2, "Apache Log4j2") {
+        Container(Log4jApi, "log4j-api", "Java", "Public logging API used by applications and adapters")
+        Container(Log4jCore, "log4j-core", "Java", "Logging implementation, configuration, filters, appenders, runtime pipeline")
+        Container(JsonLayout, "log4j-layout-template-json", "Java", "JSON layout templates for structured output")
+        Container(SLF4JImpl, "log4j-slf4j2-impl", "Java", "Adapter bridging SLF4J 2 calls to Log4j2 API")
+        Container(JdbcDbcp2, "log4j-jdbc-dbcp2", "Java, Apache DBCP2", "JDBC appender integration writing log events to databases")
+    }
+
+    System_Ext(DestFile, "File System", "Log file destination")
+    System_Ext(DestConsole, "Console", "Standard output / error")
+    System_Ext(DestNet, "Network Endpoints", "Syslog / HTTP / SMTP")
+    System_Ext(DestDb, "JDBC Databases", "Relational database destinations")
+
+    Rel(App, Log4jApi, "uses logging API")
+    Rel(SLF4JClient, SLF4JImpl, "logs via SLF4J")
+    Rel(SLF4JImpl, Log4jApi, "delegates")
+    Rel(Log4jCore, Log4jApi, "implements")
+    Rel(Log4jCore, JsonLayout, "uses layouts")
+    Rel(Log4jCore, JdbcDbcp2, "uses JDBC appender")
+
+    Rel(Log4jCore, DestFile, "writes log events")
+    Rel(Log4jCore, DestConsole, "writes log events")
+    Rel(Log4jCore, DestNet, "writes log events")
+    Rel(Log4jCore, DestDb, "writes log events")
 ```
 
 ### Container Description
