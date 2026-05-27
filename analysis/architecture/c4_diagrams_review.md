@@ -28,11 +28,11 @@ Scope: C4 diagrams only in [`docs/architecture.md`](../../docs/architecture.md)
   - Avoid vague labels such as `delegates` or `uses layouts`.
   - Prefer labels such as `calls Java API`, `implements SPI`, `writes log events to`, or `loads configuration from`.
 
-- [ ] Keep C3 diagrams focused on components inside one container.
+- [x] Keep C3 diagrams focused on components inside one container.
   - External elements may be shown only as context.
   - The `Scope Overview` diagram should be moved/relabelled because it is a module dependency overview, not a real C3 component diagram.
 
-- [ ] Fix minor consistency issues.
+- [x] Fix minor consistency issues.
   - Rename `Diagram of Lo4j-core` to `Diagram of log4j-core`.
   - Keep names and labels consistent with the C4 level they belong to.
 
