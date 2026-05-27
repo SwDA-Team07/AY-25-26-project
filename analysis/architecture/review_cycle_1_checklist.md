@@ -97,8 +97,8 @@ Suggested action:
 
 - [ ] Davide: add the small C1/C2 clarifications only if they fit naturally.
 - [ ] Davide: decide how to resolve the duplicated Mermaid diagrams between `docs/architecture.md` and `diagrams/`.
-- [ ] Yaman: reformat the SOLID findings consistently and improve readability.
-- [ ] Yaman: connect SOLID and quality claims more clearly to Design/dependency evidence.
+- [x] Yaman: reformat the SOLID findings consistently and improve readability.
+- [x] Yaman: connect SOLID and quality claims more clearly to Design/dependency evidence.
 - [ ] Both: check that the Architecture report reads coherently with Overview and Design.
 - [ ] Both: fix wording, typos, and relative links before final freeze.
 
@@ -111,12 +111,12 @@ Suggested action:
 
 ## Follow-up Corrections for Yaman
 
-- [ ] Remove the current `Out-of-Scope Context` subsection from `docs/architecture.md`, or reduce it to one short sentence without listing every excluded module.
-- [ ] Reformat the SOLID findings so they are easier to scan, preferably as a table with columns such as **Finding**, **Type**, **Evidence**, and **Location**.
-- [ ] Recheck the Dependency Inversion finding and decide whether to keep it or remove it. If kept, make the evidence coherent: the `816 import edges` number clearly shows that `log4j-core` depends heavily on `log4j-api`, so it is good evidence for a strong API/Core relationship and for the central architectural role of `log4j-api`. However, it **does not prove** Dependency Inversion by itself. If that argument is not developed clearly, remove the finding or replace it with a more defensible one.
-- [ ] Include `log4j-jdbc-dbcp2` in the maintainability evidence if the section lists the scoped modules.
-- [ ] Fix English grammar and wording in the SOLID and Architectural Characteristics sections.
-- [ ] Use Markdown formatting consistently: bold key labels, wrap module/class names in backticks, and avoid plain quoted identifiers such as `"log4j-api"`.
+- [x] Remove the current `Out-of-Scope Context` subsection from `docs/architecture.md`, or reduce it to one short sentence without listing every excluded module.
+- [x] Reformat the SOLID findings so they are easier to scan, preferably as a table with columns such as **Finding**, **Type**, **Evidence**, and **Location**.
+- [x] Recheck the Dependency Inversion finding and decide whether to keep it or remove it. If kept, make the evidence coherent: the `816 import edges` number clearly shows that `log4j-core` depends heavily on `log4j-api`, so it is good evidence for a strong API/Core relationship and for the central architectural role of `log4j-api`. However, it **does not prove** Dependency Inversion by itself. If that argument is not developed clearly, remove the finding or replace it with a more defensible one.
+- [x] Include `log4j-jdbc-dbcp2` in the maintainability evidence if the section lists the scoped modules.
+- [x] Fix English grammar and wording in the SOLID and Architectural Characteristics sections.
+- [x] Use Markdown formatting consistently: bold key labels, wrap module/class names in backticks, and avoid plain quoted identifiers such as `"log4j-api"`.
 
 ## Self-check before applying feedback
 
