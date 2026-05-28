@@ -1,0 +1,50 @@
+# C4 Diagrams Review Cycle 2 - Architecture
+
+Date prepared: 2026-05-28  
+Reviewer: Filippo (`s348651`)  
+Scope: C1, C2, and C3 diagrams in [`docs/architecture.md`](../../docs/architecture.md)
+
+## Review Goal
+
+Check that all C4 diagrams are mutually consistent, use the correct C4 level notation, and provide enough relationship detail to be understandable without relying only on surrounding prose.
+
+## Findings
+
+- [ ] Problem: C4 diagrams do not consistently preserve connected parent-level context across levels.
+  Why it is a problem: Component diagrams should show the connected containers and external systems that interact with the components; container diagrams should show the connected external systems; this context should be carried recursively from C1 to C2 to C3. Without this, the reader cannot easily trace the same relationship across abstraction levels.
+  Suggested fix: For each C3 diagram, include the relevant connected container(s) and external system(s) as context. For each C2 diagram, include the relevant external system(s). Keep the same relationship meaning when moving between levels.
+  Owner: Davide for C1/C2, Yaman for C3
+
+- [ ] Problem: The C1 context diagram still models configuration as an external system.
+  Why it is a problem: Configuration is not an external actor/system at context level; showing it as an external system makes the C1 boundary misleading and inconsistent with the later container/component diagrams.
+  Suggested fix: Remove the configuration external system from the context diagram. If configuration must be discussed, model it at the lower level where configuration files, loaders, or plugins are relevant.
+  Owner: Davide
+
+- [ ] Problem: Naming is not fully consistent across all C4 diagrams.
+  Why it is a problem: The same module, container, component, or external system may appear with slightly different names across C1/C2/C3, which makes cross-diagram comparison harder and weakens traceability.
+  Suggested fix: Create one naming convention and reuse it everywhere, including capitalization and module names such as `log4j-api`, `log4j-core`, `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2`.
+  Owner: Davide for C1/C2, Yaman for C3
+
+- [ ] Problem: Diagram levels are not repeated explicitly for every diagram.
+  Why it is a problem: Readers should immediately know whether each diagram is C1, C2, or C3, especially when several diagrams appear close together.
+  Suggested fix: Repeat the C4 level in every diagram title/caption, for example `C3 Component Diagram - log4j-core`, `C3 Component Diagram - log4j-api`, and so on.
+  Owner: Davide for C1/C2, Yaman for C3
+
+- [ ] Problem: Several relationship labels are too generic, for example only `uses` or `implements`.
+  Why it is a problem: Generic labels do not explain the actual interaction and do not satisfy the request for a small description or method on every arrow.
+  Suggested fix: Give every arrow a short concrete label describing the called API, method, protocol, or responsibility, such as `calls Logger API`, `creates LogEvent`, `loads configuration`, `writes JDBC event`, or `adapts SLF4J calls`.
+  Owner: Davide for C1/C2, Yaman for C3
+
+- [ ] Problem: Some arrows overlap with other components, containers, or labels.
+  Why it is a problem: Overlapping arrows reduce readability and make the diagram look inconsistent even when the model is correct.
+  Suggested fix: After content corrections, adjust diagram layout, direction, grouping, and relationship ordering so arrows do not cross through unrelated elements or cover labels.
+  Owner: Davide for C1/C2, Yaman for C3
+
+## Priority
+
+1. Remove the configuration external system from C1.
+2. Standardize names across all diagrams.
+3. Add the missing connected context recursively from C1 to C2 to C3.
+4. Repeat the C4 level in every diagram title/caption.
+5. Replace generic arrow labels with concrete interaction descriptions.
+6. Clean up arrow layout so lines and labels do not overlap diagram elements.

@@ -14,6 +14,7 @@ Check whether the Architecture report is clear, understandable, and consistent w
 - Check consistency with `docs/overview.md`.
 - Check consistency with `docs/design.md`.
 - Check that C1, C2, and C3 diagrams are understandable and coherent.
+- Check the dedicated C4 cycle 2 review in [`c4_diagrams_review_cycle_2.md`](./c4_diagrams_review_cycle_2.md).
 - Check that SOLID and architectural quality claims are evidence-backed.
 - Check whether any statement or paragraph is difficult to understand.
 - Check wording, typos, links, and formatting.
