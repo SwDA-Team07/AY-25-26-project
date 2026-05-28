@@ -2,18 +2,18 @@
 
 **A.Y. 2025/2026**
 
-## 📌 Project Overview
+## Project Overview
 
-This project consists of an in-depth analysis of the open-source system **Apache Log4j2**, developed within the context of the *Software Design and Architecture* course.
+This repository contains the project work for the *Software Design and Architecture* course. The selected open-source system is **Apache Log4j2**.
 
-The goal is to study and evaluate both:
+The analysis covers:
 
 * **Software Design** aspects (dependencies, design patterns)
-* **Software Architecture** (using the C4 model)
+* **Software Architecture** aspects (using the C4 model)
 
 ---
 
-## 🧠 Analyzed System
+## Analyzed System
 
 * **Name:** Apache Log4j2
 * **Type:** Java-based logging framework
@@ -23,7 +23,7 @@ The goal is to study and evaluate both:
 
 ---
 
-## 👥 Team Members
+## Team Members
 
 * [Davide Colabella](journals/davide.md)
 * [Filippo Benevenga](journals/filippo.md)
@@ -33,21 +33,20 @@ The goal is to study and evaluate both:
 
 ---
 
-## 📂 Repository Structure & Navigation
+## Repository Structure and Navigation
 
 ```
 .
-├── docs/           # Final reports (overview, design, architecture)
-├── diagrams/       # C4 diagrams (context, container, component)
-├── analysis/       # Supporting analysis (dependencies, patterns, metrics)
-├── journals/       # Individual contribution logs
-├── tools/          # Scripts and tools used for analysis
-└── references/     # External resources and documentation
+|-- docs/           # Final reports (overview, design, architecture)
+|-- analysis/       # Supporting analysis (dependencies, patterns, metrics)
+|-- journals/       # Individual contribution logs
+|-- tools/          # Scripts and tools used for analysis
+`-- references/     # External resources and documentation
 ```
 
 ---
 
-## 📄 Reports
+## Reports
 
 - [Overview Report](docs/overview.md)
 - [Software Design Report](docs/design.md)
@@ -55,16 +54,15 @@ The goal is to study and evaluate both:
 
 ---
 
-## 📂 Project Resources
+## Project Resources
 
 - [Analysis](analysis/)
-- [Diagrams](diagrams/)
 - [Tools](tools/)
 - [References](references/)
 
 ---
 
-## 🧰 Tools and Methods
+## Tools and Methods
 
 The analysis is supported by:
 
