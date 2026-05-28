@@ -164,18 +164,19 @@ Rel(async, app, "dispatches events asynchronously to")
 C4Component
 title log4j-api - Public Logging Abstractions
 
+System_Ext(app, "Application Code", "Application using the logging API")
+
 Container_Boundary(api, "log4j-api") {
 
     Component(status, "StatusLogger", "Internal Diagnostics")
     Component(ext, "ExtendedLogger", "Advanced API")
     Component(msgFactory, "MessageFactory", "Message Builder")
     Component(msg, "Message", "Log Message Model")
-    Component(app, "Application Code", "External Actor")
     Component(lm, "LogManager", "Logger Factory")
     Component(lf, "LoggerFactory / Provider", "Provider Lookup")
     Component(logger, "Logger API", "Public Logging Interface")
-    Component(simple, "SimpleLogger", "Fallback Logger")
     Component(event, "LogEvent Contract", "Event Model")
+    Component(simple, "SimpleLogger", "Fallback Logger")    
 }
 
 Rel(app, lm, "requests logger via")
@@ -195,6 +196,9 @@ Rel(lm, status, "publishes internal diagnostics to")
 C4Component
 title log4j-layout-template-json - JSON Layout Extension
 
+Container_Ext(core, "log4j-core", "Provides Layout SPI")
+Container_Ext(api, "log4j-api", "Provides LogEvent model")
+
 Container_Boundary(layout, "log4j-layout-template-json") {
 
     Component(json, "JsonTemplateLayout", "Layout Implementation")
@@ -204,15 +208,11 @@ Container_Boundary(layout, "log4j-layout-template-json") {
     Component(writer, "JsonWriter", "Low-allocation Serializer")
 }
 
-System_Ext(core, "log4j-core Layout SPI")
-
-Component(event, "LogEvent", "log4j-api model")
-
 Rel(core, json, "invokes Layout SPI on")
 Rel(json, resolver, "resolves template using")
 Rel(resolver, registry, "queries")
 Rel(registry, builtin, "provides field resolvers")
-Rel(builtin, event, "reads fields from")
+Rel(builtin, api, "reads LogEvent fields from")
 Rel(json, writer, "serializes output using")
 ```
 
@@ -222,24 +222,24 @@ Rel(json, writer, "serializes output using")
 C4Component
 title log4j-slf4j2-impl - SLF4J 2 Adapter
 
-Container_Boundary(slf4j, "log4j-slf4j2-impl") {
+System_Ext(slf4jApi, "SLF4J 2 API", "External logging facade")
+Container_Ext(log4jApi, "log4j-api", "Log4j2 public API")
+
+Container_Boundary(slf4jImpl, "log4j-slf4j2-impl") {
 
     Component(marker, "Log4jMarkerFactory", "Marker Bridge")
     Component(provider, "Log4jServiceProvider", "SLF4J ServiceLoader Entry")
     Component(factory, "Log4jLoggerFactory", "Logger Factory Adapter")
-    Component(adapter, "Log4jLogger", "SLF4J → Log4j Adapter")
+    Component(adapter, "Log4jLogger", "SLF4J to Log4j Adapter")
     Component(mdc, "Log4jMDCAdapter", "MDC Bridge")
 }
 
-System_Ext(slf4j, "SLF4J 2 API")
-Container_Ext(api, "log4j-api")
-
-Rel(slf4j, provider, "discovers via ServiceLoader")
-Rel(provider, factory, "exposes factory")
+Rel(slf4jApi, provider, "discovers provider through ServiceLoader")
+Rel(provider, factory, "provides logger factory")
 Rel(factory, adapter, "creates adapter logger")
-Rel(adapter, api, "delegates calls to ExtendedLogger")
-Rel(slf4j, marker, "routes markers through")
-Rel(slf4j, mdc, "routes MDC through")
+Rel(adapter, log4jApi, "delegates logging calls to")
+Rel(slf4jApi, marker, "routes marker operations through")
+Rel(slf4jApi, mdc, "routes MDC operations through")
 ```
 
 #### Diagram of `log4j-jdbc-dbcp2`
@@ -286,13 +286,13 @@ Rel(jdbc, core, "provides JDBC ConnectionSource for")
 Rel(slf2, api, "adapts SLF4J calls onto")
 ```
 
-The 816 cross-module import edges between `log4j-core` and `log4j-api` and the central hotspots `Plugin.java`, `LogEvent.java`, and `StatusLogger.java` (see [`analysis/dependencies/architecture_handoff_packet.md`].) confirm that the API/Core split is the main extensibility boundary, while the three peripheral modules plug into that boundary via the `Layout`, `Appender`, and provider SPIs.
+The 816 cross-module import edges between `log4j-core` and `log4j-api` and the central hotspots `Plugin.java`, `LogEvent.java`, and `StatusLogger.java` (see [architecture_handoff_packet.md](../analysis/dependencies/architecture_handoff_packet.md)) confirm that the API/Core split is the main extensibility boundary, while the three peripheral modules plug into that boundary via the Layout, Appender, and provider SPIs.
 
 
 ### Container: `log4j-api`
 
 #### Container Description
-The log4j-api container provides public logging interface used by applications and libraries. It defines the core abstractions for creating loggers, creating log messages, and interacting with logging system independently of the runtime implementation.
+The `log4j-api` container provides the public logging interface used by applications and libraries. It defines the core abstractions for creating loggers, creating log messages, and interacting with logging system independently of the runtime implementation.
 
 Components:
 
@@ -308,7 +308,7 @@ Components:
 ### Container: `log4j-core` 
 
 #### Container Description
-The log4j-core container has the primary runtime implementation of Log4j2. It is responsible for configuration management, log event processing, filtering, formatting, plugin extensibility, and output delivery.
+The `log4j-core` container contains the primary runtime implementation of Log4j2. It is responsible for configuration management, log event processing, filtering, formatting, plugin extensibility, and output delivery.
 
 Components:
 
@@ -377,69 +377,18 @@ Additional Log4j2 integration modules exist outside the selected scope, but they
 
 ### SOLID Principles Analysis at Level 3
 
-The Log4j2 architecture demonstrates an emphasis on modularity, extensibility, and separation of concerns through clear distinction between API components, runtime core components, and external integration modules. Architectural decomposition of the system mostly aligns well with several SOLID principles, particularly regarding extensibility, modular separation, and interface-based integration. This is achieved through the use of plugin-based extensibility, abstraction layers, and separation between `log4j-api` and `log4j-core`.
+The Log4j2 architecture demonstrates an emphasis on modularity, extensibility, and separation of concerns through a clear distinction between API components, runtime core components, and external integration modules. Architectural decomposition of the system mostly aligns well with several SOLID principles, particularly regarding extensibility, modular separation, and interface-based integration. This is achieved through the use of plugin-based extensibility, abstraction layers, and separation between `log4j-api` and `log4j-core`.
 
 At component level, the architecture generally maintains high cohesion by assigning focused responsibilities to components such as `Appender`, `Layout`, `Filter`, and `Log4jLogger`. Integration modules isolate interoperability concerns from the runtime engine, improving maintainability and reducing unnecessary subsystem dependencies.
 
 #### SOLID Findings:
 
-- **Finding 1** — Open/Closed Principle through Plugin System
-
-Type: Architectural Strength
-
-Explanation:
-The Plugin System allows appenders, layouts, and filters to be extended without modifying existing runtime components. Modules such as `log4j-layout-template-json` integrate through extension points while remaining decoupled from the internal implementation of the logging engine.
-
-Evidence:
-`Plugin.java` and SPI-based plugin registration mechanisms enable runtime discovery and integration of external components.
-
-Location: `log4j-core` -> Plugin System
-
-- **Finding 2** — Dependency Inversion through API/Core separation
-
-Type: Architectural strength
-
-Explanation: 
-Applications and integration modules depends primarily on abstractions provided by `log4j-api` rather than concrete runtime implementations in `log4j-core`. Strong separation between API and runtime implementation reduces coupling and improves modular extensibility.
-
-Evidence: 
-High cross-module dependency concentration between `log4j-api` and `log4j-core` (816 import edges) identified in dependency analysis.
-
-Location: Relationship between `log4j-api` and `log4j-core`
-
-- **Finding 3** — Single Responsibility Principle trade-off in LoggerContext
-
-Type: Architectural trade-off
-
-Explanation:
-`LoggerContext` manages runtime state, lifecycle coordination, configuration handling, and reconfiguration processes. While centralized management simplifies runtime coordination, combining multiple responsibilities increases component complexity and partially weakens strict Single Responsibility Principle alignment.
-
-Evidence:
-`LoggerContext` coordinates configuration loading, runtime state management, and reconfiguration workflows across multiple runtime subsystems.
-
-Location: `log4j-core` -> `LoggerContext`
-
-- **Finding 4** — Adapter-based integration supports Interface Segregation
-
-Type: Architectural strength
-
-Explanation: `log4j-slf4j2-impl` module isolates SLF4J interoperability concerns into dedicated adapter components such as `Log4jLogger` and `Log4jServiceProvider`. This prevents external logging abstractions from leaking directly into the core runtime architecture.
-
-Evidence: Adapter classes (`Log4jLogger`, `Log4jServiceProvider`) isolate SLF4J API dependencies from `log4j-core`.
-
-Location: `log4j-slf4j2-impl`
-
-#### SOLID Findings as Table:
-
 | Finding | Type | Explanation | Evidence | Location |
 |---|---|---|---|---|
 | Open/Closed Principle through Plugin System | Architectural Strength | The plugin architecture allows appenders, layouts, and filters to be extended without modifying existing runtime components. Modules such as `log4j-layout-template-json` integrate through extension points while remaining decoupled from the internal logging pipeline. | `Plugin.java` extension mechanism and SPI-based plugin registration. | `log4j-core` → Plugin System |
-| API/Core Separation improves modularity | Architectural Strength | `log4j-api` provides stable abstractions while `log4j-core` contains runtime implementations. Peripheral modules integrate mainly through APIs and SPIs rather than directly modifying runtime internals. | Dependency analysis identified 816 import edges from `log4j-core` to `log4j-api`, confirming the central architectural role of the API module. | Relationship between `log4j-api` and `log4j-core` |
+| API/Core separation improves modular extensibility | Architectural Strength | `log4j-api` defines the public logging abstractions while `log4j-core` provides the runtime implementation. Peripheral modules integrate primarily through APIs and SPI contracts rather than direct runtime modification. | Dependency analysis identified approximately 816 import edges from `log4j-core` to `log4j-api`, confirming that the API module acts as the central architectural boundary within the selected scope. | Relationship between `log4j-api` and `log4j-core` |
 | Single Responsibility Principle trade-off in `LoggerContext` | Architectural Trade-off | `LoggerContext` coordinates runtime state, lifecycle management, configuration handling, and reconfiguration workflows. Centralized coordination simplifies runtime management but increases component complexity. | `LoggerContext` interacts with configuration loading, runtime state management, and reconfiguration subsystems. | `log4j-core` → `LoggerContext` |
 | Adapter-based integration supports Interface Segregation | Architectural Strength | The `log4j-slf4j2-impl` module isolates SLF4J interoperability concerns into dedicated adapter components, preventing external logging abstractions from leaking into runtime internals. | `Log4jLogger` and `Log4jServiceProvider` isolate SLF4J API dependencies from `log4j-core`. | `log4j-slf4j2-impl` |
-
-
-
 
 ---
 
@@ -453,9 +402,9 @@ Location: `log4j-slf4j2-impl`
 - **Evidence:** `Plugin.java` extension mechanism allows modules such as `log4j-layout-template-json` to integrate with the Layout SPI without modifying `log4j-core`.
 
 #### Characteristic 2 - Interoperability
-- **Definition:** The ability of architecture to interact with external frameworks, APIs, and infrastructure systems.
-- **How Supported:** Log4j2 isolates interoperability concerns to dedicated adapter and integration modules. External logging frameworks communicate with system through bridge components rather than coupling to runtime internals.
-- **Evidence:** "log4j-slf4j2-impl" module adapts SLF4J 2 API calls into `log4j-api` through components such as `Log4jLogger` and `Log4jServiceProvider`.
+- **Definition:** The ability of the architecture to interact with external frameworks, APIs, and infrastructure systems.
+- **How Supported:** Log4j2 isolates interoperability concerns to dedicated adapter and integration modules. External logging frameworks communicate with the system through bridge components rather than coupling to runtime internals.
+- **Evidence:** `log4j-slf4j2-impl` module adapts SLF4J 2 API calls into `log4j-api` through components such as `Log4jLogger` and `Log4jServiceProvider`.
 
 #### Characteristic 3 - Maintainability
 - **Definition:** The ability of the system to support modification, extension, and long-term evolution/support with minimal impact on existing components.
@@ -488,7 +437,7 @@ The dependency structure reflects a hub-and-spoke architecture centered around `
 
 The selected Log4j2 modules demonstrate a modular and extensible architecture centered around the separation between `log4j-api` and `log4j-core`. The architecture strongly supports extensibility through plugin-based components, SPI-driven integration mechanisms, and adapter modules such as `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2`.
 
-The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle, Dependency Inversion Principle, and Interface Segregation Principle. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remain present, especially in runtime coordination components such as LoggerContext, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
+The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle and Interface Segregation Principle. The architecture also demonstrates strong modular separation between API abstractions, runtime implementations, and extension modules through the use of SPIs, adapters, and plugin-based integration. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remain, especially in runtime coordination components such as `LoggerContext`, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
 
 Overall, the analyzed architecture demonstrates strong modular decomposition, high component cohesion, and controlled coupling around the API/Core boundary while maintaining extensibility, interoperability, maintainability, and runtime performance across the selected scope.
 
