@@ -22,7 +22,17 @@ Check whether the Architecture report is clear, understandable, and consistent w
 
 Add one checkbox per issue found. If no issue is found, write: `Review completed: no issues found.`
 
-- [ ] Problem:  
-  Why it is a problem:  
-  Suggested fix:  
-  Owner:
+- [ ] Problem: Relation direction is inconsistent between C2 and C3 scope overview diagrams for peripheral modules (`log4j-layout-template-json`, `log4j-jdbc-dbcp2`).
+  Why it is a problem: In C2, `log4j-core` is shown as using peripheral modules; in C3 scope overview, some edges are shown in the opposite direction as "provides ... for". This makes cross-section reading less coherent even when the meaning is logically close.
+  Suggested fix: Pick one direction convention (recommended: consumer -> provider with labels like "uses") and apply it consistently in both C2 and C3 overview diagrams.
+  Owner: Davide / Yaman
+
+- [ ] Problem: SOLID claims are partially evidence-backed but still miss direct traceability for some rows in the SOLID table.
+  Why it is a problem: The review guide asks for evidence-backed claims; a few findings use generic statements without explicit anchors to concrete artifacts or classes, which weakens grading traceability.
+  Suggested fix: For each SOLID row, add at least one explicit anchor (class/component path or analysis artifact reference) in the Evidence column.
+  Owner: Yaman
+
+- [ ] Problem: Minor wording/formatting inconsistencies remain in Architecture prose.
+  Why it is a problem: Review Cycle 2 asks for final readability cleanup; small inconsistencies (e.g., mixed style for technical terms and occasional awkward phrasing) reduce clarity and polish.
+  Suggested fix: Do one final language/style pass over `docs/architecture.md` with consistent backtick usage for module/class names and concise phrasing.
+  Owner: Davide / Yaman
