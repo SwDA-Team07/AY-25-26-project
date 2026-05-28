@@ -121,18 +121,18 @@ Suggested action:
 
 ## Follow-up Cleanup Checklist - 2026-05-28
 
-- [ ] Yaman: clean up the remaining C3 diagram issues.
+- [x] Yaman: clean up the remaining C3 diagram issues.
   - Move `Application Code` outside the `log4j-api` boundary.
   - Fix the duplicate `slf4j` alias in the `log4j-slf4j2-impl` diagram.
   - Model external context consistently with `System_Ext` or `Container_Ext`.
 
-- [ ] Yaman: remove the duplicated SOLID findings format. Keep the table format.
+- [x] Yaman: remove the duplicated SOLID findings format. Keep the table format.
 
-- [ ] Yaman: make the Dependency Inversion discussion more cautious.
+- [x] Yaman: make the Dependency Inversion discussion more cautious.
   - The `816 import edges` evidence supports the API/Core boundary, but it does not prove Dependency Inversion by itself.
   - Update the Summary consistently if the claim is softened.
 
-- [ ] Yaman: fix the remaining link and Markdown cleanup.
+- [x] Yaman: fix the remaining link and Markdown cleanup.
   - Fix the broken `architecture_handoff_packet.md` link.
   - Replace remaining quoted module names such as `"log4j-slf4j2-impl"` with backticks.
 
