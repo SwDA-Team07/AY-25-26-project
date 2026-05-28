@@ -95,8 +95,8 @@ Suggested action:
 
 ### Still open before final freeze
 
-- [ ] Davide: add the small C1/C2 clarifications only if they fit naturally.
-- [ ] Davide: decide how to resolve the duplicated Mermaid diagrams between `docs/architecture.md` and `diagrams/`.
+- [x] Davide: add the small C1/C2 clarifications only if they fit naturally.
+- [x] Davide: decide how to resolve the duplicated Mermaid diagrams between `docs/architecture.md` and `diagrams/`.
 - [x] Yaman: reformat the SOLID findings consistently and improve readability.
 - [x] Yaman: connect SOLID and quality claims more clearly to Design/dependency evidence.
 - [ ] Both: check that the Architecture report reads coherently with Overview and Design.
@@ -104,10 +104,10 @@ Suggested action:
 
 ## Follow-up Corrections for Davide
 
-- [ ] Decide whether to remove the separate `diagrams/` directory or keep it as the source location for Mermaid diagrams.
-- [ ] If `diagrams/` is kept, reorganize it consistently by C4 level: C1 diagrams under `diagrams/context/`, C2 diagrams under `diagrams/container/`, and C3 diagrams under `diagrams/components/`.
-- [ ] If `.mmd` files are kept, make `docs/architecture.md` explicitly reference them or document that the inline Mermaid blocks are copies generated from those files.
-- [ ] Fix the current mismatch where `diagrams/context/` and `diagrams/container/` contain only `.gitkeep`, while all real diagram files are under `diagrams/components/`.
+- [x] Decide whether to remove the separate `diagrams/` directory or keep it as the source location for Mermaid diagrams. Resolved by removing the duplicated `diagrams/` directory (commit `e6ff685`); `docs/architecture.md` is now the single source for Mermaid diagrams.
+- [x] If `diagrams/` is kept, reorganize it consistently by C4 level: C1 diagrams under `diagrams/context/`, C2 diagrams under `diagrams/container/`, and C3 diagrams under `diagrams/components/`. Superseded by the removal of `diagrams/`.
+- [x] If `.mmd` files are kept, make `docs/architecture.md` explicitly reference them or document that the inline Mermaid blocks are copies generated from those files. Superseded by the removal of `diagrams/`.
+- [x] Fix the current mismatch where `diagrams/context/` and `diagrams/container/` contain only `.gitkeep`, while all real diagram files are under `diagrams/components/`. Superseded by the removal of `diagrams/`.
 
 ## Follow-up Corrections for Yaman
 
