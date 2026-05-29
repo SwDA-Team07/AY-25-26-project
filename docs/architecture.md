@@ -9,12 +9,11 @@
 ### System Context Diagram
 ```mermaid
 C4Context
-    title System Context Diagram for Apache Log4j2
+    title C1 System Context Diagram - Apache Log4j2
 
     Person(Ops, "Ops & Security Teams", "Configure and monitor the logging stack")
     System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
     System_Ext(SLF4J, "SLF4J 2 API", "Logging facade bridged to Log4j2")
-    System_Ext(Config, "Configuration Files", "XML / JSON / YAML / Properties")
 
     System(Log4j2, "Apache Log4j2", "Java logging framework in scope of this analysis")
 
@@ -24,10 +23,9 @@ C4Context
     System_Ext(DestDb, "JDBC Databases", "Relational database destinations")
     System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
 
-    Rel(App, Log4j2, "logs via API")
-    Rel(Ops, Log4j2, "configure and monitor")
+    Rel(App, Log4j2, "logs via Logger API")
+    Rel(Ops, Log4j2, "configures via config files, monitors via log output")
     Rel(SLF4J, Log4j2, "bridged by log4j-slf4j2-impl")
-    Rel(Config, Log4j2, "provides configuration")
 
     Rel(Log4j2, DestFile, "writes log events")
     Rel(Log4j2, DestConsole, "writes log events")
@@ -38,11 +36,13 @@ C4Context
 
 ### Context Description
 Apache Log4j2 is a Java logging framework used as a library inside applications.
-The system boundary includes the Log4j2 API and implementation modules; external
+The system boundary includes the `log4j-api` and implementation modules; external
 actors include application developers, operations and security teams, and
-systems that receive log output. Log4j2 reads configuration from files, accepts
-log calls from applications or the SLF4J facade, and delivers formatted log
-events to files, consoles, network endpoints, databases, or monitoring stacks.
+systems that receive log output. Log4j2 accepts log calls from applications or the
+SLF4J 2 facade and delivers formatted log events to files, consoles, network
+endpoints, databases, or monitoring stacks. Configuration is not an external system
+at context level; it is modelled at the container and component levels where the
+configuration loader and plugins are relevant.
 
 ---
 
@@ -51,10 +51,11 @@ events to files, consoles, network endpoints, databases, or monitoring stacks.
 ### Container Diagram
 ```mermaid
 C4Container
-    title Container Diagram for Apache Log4j2
+    title C2 Container Diagram - Apache Log4j2
 
+    Person(Ops, "Ops & Security Teams", "Configure and monitor the logging stack")
     System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
-    System_Ext(SLF4JClient, "SLF4J 2 Clients", "Applications using the SLF4J facade")
+    System_Ext(SLF4J, "SLF4J 2 API", "Logging facade bridged to Log4j2")
 
     System_Boundary(log4j2, "Apache Log4j2") {
         Container(Log4jApi, "log4j-api", "Java", "Public logging API used by applications and adapters")
@@ -68,18 +69,22 @@ C4Container
     System_Ext(DestConsole, "Console", "Standard output / error")
     System_Ext(DestNet, "Network Endpoints", "Syslog / HTTP / SMTP")
     System_Ext(DestDb, "JDBC Databases", "Relational database destinations")
+    System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
 
-    Rel(App, Log4jApi, "uses logging API")
-    Rel(SLF4JClient, SLF4JImpl, "logs via SLF4J")
-    Rel(SLF4JImpl, Log4jApi, "delegates")
-    Rel(Log4jCore, Log4jApi, "implements")
-    Rel(Log4jCore, JsonLayout, "uses layouts")
-    Rel(Log4jCore, JdbcDbcp2, "uses JDBC appender")
+    Rel(App, Log4jApi, "calls Logger API")
+    Rel(Ops, Log4jCore, "supplies configuration files loaded by")
+    Rel(Ops, LogAgg, "monitors log output via")
+    Rel(SLF4J, SLF4JImpl, "discovered via ServiceLoader")
+    Rel(SLF4JImpl, Log4jApi, "delegates SLF4J calls to Logger API")
+    Rel(Log4jCore, Log4jApi, "implements logging abstractions of")
+    Rel(Log4jCore, JsonLayout, "formats events via JSON Layout SPI")
+    Rel(Log4jCore, JdbcDbcp2, "obtains pooled JDBC connections via")
 
     Rel(Log4jCore, DestFile, "writes log events")
     Rel(Log4jCore, DestConsole, "writes log events")
     Rel(Log4jCore, DestNet, "writes log events")
-    Rel(Log4jCore, DestDb, "writes log events")
+    Rel(JdbcDbcp2, DestDb, "writes log events over pooled JDBC connections")
+    Rel(Log4jCore, LogAgg, "forwards logs")
 ```
 
 ### Container Description
