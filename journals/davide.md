@@ -50,8 +50,28 @@
 
 ---
 
+### 2026-05-29
+
+## **Activities:**
+
+* Addressed the Review Cycle 2 findings assigned to me for the C1/C2 diagrams in [`docs/architecture.md`](../docs/architecture.md), tracked in [`analysis/architecture/c4_diagrams_review_cycle_2.md`](../analysis/architecture/c4_diagrams_review_cycle_2.md) and [`analysis/architecture/review_cycle_2_checklist.md`](../analysis/architecture/review_cycle_2_checklist.md).
+* Removed the `Configuration Files` external system (and its relation) from the C1 context diagram, since configuration is not an external actor at context level; updated the Context Description to note it is modelled at the container/component level.
+* Added the C4 level to the C1 and C2 diagram titles (`C1 System Context Diagram - Apache Log4j2`, `C2 Container Diagram - Apache Log4j2`).
+* Replaced the generic C2 relationship labels (`delegates`, `implements`, `uses layouts`, `uses JDBC appender`) with concrete interaction descriptions, and standardized naming and backtick usage across C1/C2.
+* Restored cross-level coherence between C1 and C2: carried the `Ops & Security Teams` actor, the `SLF4J 2 API` external system, and the `Log Aggregation / Monitoring` destination down into C2 (C2 previously dropped Ops and monitoring and renamed SLF4J inconsistently to `SLF4J 2 Clients`). Modelled the Ops interaction as mediated rather than direct (supplies configuration files loaded by `log4j-core`, monitors via the log-aggregation stack), and aligned the SLF4J naming with the C3 `log4j-slf4j2-impl` diagram.
+* Connected the `JDBC Databases` external system to `log4j-jdbc-dbcp2` in C2 instead of `log4j-core`, matching the C3 `log4j-jdbc-dbcp2` diagram where the pooled `ConnectionSource` opens the actual JDBC connections; `log4j-core` keeps the direct File/Console/Network destinations.
+* Ticked the C1-configuration finding (mine only) and annotated the findings shared with Yaman as completed for the C1/C2 portion, leaving their boxes open until the C3 part is done.
+
+**Contribution to reports:**
+
+* Overview: No changes.
+* Design: No changes.
+* Architecture: Reworked the C1/C2 C4 diagrams per Review Cycle 2 (removed configuration from C1, added levels to titles, concrete arrow labels, consistent naming/backticks) and updated the related review/checklist files.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:** None.
 * **Design:** None.
-* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope; converted C1 and C2 to Mermaid C4 syntax and consolidated all diagrams inline in `docs/architecture.md` by removing the duplicated `diagrams/` directory.
+* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope; converted C1 and C2 to Mermaid C4 syntax and consolidated all diagrams inline in `docs/architecture.md` by removing the duplicated `diagrams/` directory; addressed the Review Cycle 2 C1/C2 findings (removed configuration from C1, added C4 levels to titles, concrete arrow labels, consistent naming/backticks).
