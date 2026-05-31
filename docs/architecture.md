@@ -138,18 +138,27 @@ performance and configurability over a strict inward-only dependency rule.
 
 ```mermaid
 C4Component 
-title log4j-core - Runtime Logging Pipeline
+title C3 Component Diagram - log4j-core
+
+Container_Ext(api, "log4j-api",, "Public logging API")
+Container_Ext(json, "log4j-layout-template-json",, "JSON Layout module")
+Container_Ext(jdbc, "log4j-jdbc-dbcp2",, "JDBC integration")
+
+System_Ext(file, "File System", "Log file destination")
+System_Ext(ops, "Ops & Security Teams", "Configuration provider")
+System_Ext(console, "Console", "Standard output")
+System_Ext(net, "Network Endpoints", "Syslog / HTTP / SMTP")
 
 Container_Boundary(core, "log4j-core") {
 
-    Component(ctx, "LoggerContext", "Runtime State Manager")
-    Component(conf, "Configuration", "Configuration Loader")
-    Component(lconf, "LoggerConfig", "Routing Rules")
-    Component(app, "Appender", "Log Event Output")
-    Component(filter, "Filter", "Event Filtering")
-    Component(plugin, "Plugin System", "Extension SPI")
-    Component(layout, "Layout", "Event Formatter")
-    Component(async, "Async Logger", "Async Processing")
+    Component(ctx, "LoggerContext",, "Runtime state and lifecycle manager")
+    Component(conf, "Configuration",, "Configuration loading and management")
+    Component(lconf, "LoggerConfig",, "Log event routing rules")
+    Component(app, "Appender",, "Log event output destination")
+    Component(filter, "Filter",, "Log event filtering rules")
+    Component(plugin, "Plugin System",, "SPI-based extension framework")
+    Component(layout, "Layout",, "Log event formatting engine")
+    Component(async, "Async Logger",, "Asynchronous event processing")
 }
 
 Rel(ctx, conf, "loads configuration from")
@@ -161,27 +170,37 @@ Rel(plugin, app, "extends appenders via SPI")
 Rel(plugin, layout, "extends layouts via SPI")
 Rel(plugin, filter, "extends filters via SPI")
 Rel(async, app, "dispatches events asynchronously to")
+
+Rel(ops, conf, "supplies configuration files to")
+Rel(api, ctx, "creates and manages logger contexts through")
+Rel(layout, json, "invokes Layout SPI implemented by")
+Rel(app, jdbc, "obtains JDBC connections through")
+Rel(app, file, "writes log events")
+Rel(app, console, "writes log events")
+Rel(app, net, "writes log events")
 ```
  
 #### Diagram of `log4j-api`
 
 ```mermaid
 C4Component
-title log4j-api - Public Logging Abstractions
+title C3 Component Diagram - log4j-api
 
-System_Ext(app, "Application Code", "Application using the logging API")
+System_Ext(app, "Applications / Libraries", "Java applications that emit log calls")
+Container_Ext(slf4jImpl, "log4j-slf4j2-impl",, "SLF4J adapter")
+Container(core, "log4j-core", "Java Library", "Runtime logging engine")
 
 Container_Boundary(api, "log4j-api") {
 
-    Component(status, "StatusLogger", "Internal Diagnostics")
-    Component(ext, "ExtendedLogger", "Advanced API")
-    Component(msgFactory, "MessageFactory", "Message Builder")
-    Component(msg, "Message", "Log Message Model")
-    Component(lm, "LogManager", "Logger Factory")
-    Component(lf, "LoggerFactory / Provider", "Provider Lookup")
-    Component(logger, "Logger API", "Public Logging Interface")
-    Component(event, "LogEvent Contract", "Event Model")
-    Component(simple, "SimpleLogger", "Fallback Logger")    
+    Component(status, "StatusLogger",, "Internal status diagnostics")
+    Component(lf, "LoggerFactory / Provider",, "Provider discovery mechanism")
+    Component(logger, "Logger API",, "Public logging interface")
+    Component(event, "LogEvent Contract",, "Log event abstraction")
+    Component(lm, "LogManager",, "Logger creation and lookup")
+    Component(ext, "ExtendedLogger",, "Extended logging operations")
+    Component(msgFactory, "MessageFactory",, "Structured message creation")
+    Component(msg, "Message",, "Log message abstraction")
+    Component(simple, "SimpleLogger",, "Fallback logging implementation")    
 }
 
 Rel(app, lm, "requests logger via")
@@ -189,77 +208,84 @@ Rel(lm, lf, "resolves provider using")
 Rel(lf, logger, "creates logger instance")
 Rel(logger, ext, "extends API with")
 Rel(logger, msgFactory, "builds messages via")
-Rel(msgFactory, msg, "creates")
+Rel(msgFactory, msg, "creates Message instances")
 Rel(logger, event, "emits log events")
 Rel(lm, simple, "fallback when no core available")
 Rel(lm, status, "publishes internal diagnostics to")
+Rel(slf4jImpl, lm, "obtains loggers through")
+Rel(core, logger, "implements logging abstractions exposed by")
 ```
 
 #### Diagram of `log4j-layout-template-json`
 
 ```mermaid
 C4Component
-title log4j-layout-template-json - JSON Layout Extension
+title C3 Component Diagram - log4j-layout-template-json
 
-Container_Ext(core, "log4j-core", "Provides Layout SPI")
-Container_Ext(api, "log4j-api", "Provides LogEvent model")
+Container_Ext(core, "log4j-core",, "Provides Layout SPI")
+Container_Ext(api, "log4j-api",, "Provides LogEvent model")
 
 Container_Boundary(layout, "log4j-layout-template-json") {
 
-    Component(json, "JsonTemplateLayout", "Layout Implementation")
-    Component(resolver, "TemplateResolver", "Template Engine")
-    Component(registry, "EventResolver Registry", "Field Resolver Registry")
-    Component(builtin, "Built-in EventResolvers", "Standard Field Extractors")
-    Component(writer, "JsonWriter", "Low-allocation Serializer")
+    Component(json, "JsonTemplateLayout",, "JSON layout implementation")
+    Component(resolver, "TemplateResolver",, "JSON template resolution engine")
+    Component(registry, "EventResolver Registry",, "Event field resolver registry")
+    Component(builtin, "Built-in EventResolvers",, "Standard Field Extractors")
+    Component(writer, "JsonWriter",, "Low-allocation JSON serializer")
 }
 
 Rel(core, json, "invokes Layout SPI on")
 Rel(json, resolver, "resolves template using")
-Rel(resolver, registry, "queries")
-Rel(registry, builtin, "provides field resolvers")
+Rel(resolver, registry, "looks up field resolvers in")
+Rel(registry, builtin, "returns resolver implementations from")
 Rel(builtin, api, "reads LogEvent fields from")
-Rel(json, writer, "serializes output using")
+Rel(json, writer, "writes JSON output through")
+Rel(core, api, "implements logging abstractions of")
+
 ```
 
 #### Diagram of `log4j-slf4j2-impl`
 
 ```mermaid
 C4Component
-title log4j-slf4j2-impl - SLF4J 2 Adapter
+title C3 Component Diagram - log4j-slf4j2-impl
 
 System_Ext(slf4jApi, "SLF4J 2 API", "External logging facade")
-Container_Ext(log4jApi, "log4j-api", "Log4j2 public API")
+Container_Ext(core, "log4j-core",, "Runtime logging engine")
+Container_Ext(log4jApi, "log4j-api",, "Log4j2 public API")
+
 
 Container_Boundary(slf4jImpl, "log4j-slf4j2-impl") {
 
-    Component(marker, "Log4jMarkerFactory", "Marker Bridge")
-    Component(provider, "Log4jServiceProvider", "SLF4J ServiceLoader Entry")
-    Component(factory, "Log4jLoggerFactory", "Logger Factory Adapter")
-    Component(adapter, "Log4jLogger", "SLF4J to Log4j Adapter")
-    Component(mdc, "Log4jMDCAdapter", "MDC Bridge")
+    Component(mdc, "Log4jMDCAdapter",, "SLF4J MDC bridge")
+    Component(provider, "Log4jServiceProvider",, "SLF4J ServiceLoader provider")
+    Component(factory, "Log4jLoggerFactory",, "SLF4J logger factory adapter")
+    Component(adapter, "Log4jLogger",, "SLF4J-to-Log4j adapter")
+    Component(marker, "Log4jMarkerFactory",, "SLF4J marker bridge")
 }
 
 Rel(slf4jApi, provider, "discovers provider through ServiceLoader")
 Rel(provider, factory, "provides logger factory")
 Rel(factory, adapter, "creates adapter logger")
-Rel(adapter, log4jApi, "delegates logging calls to")
+Rel(adapter, log4jApi, "delegates SLF4J Logger calls to")
 Rel(slf4jApi, marker, "routes marker operations through")
 Rel(slf4jApi, mdc, "routes MDC operations through")
+Rel(core, log4jApi, "implements logging abstractions of")
 ```
 
 #### Diagram of `log4j-jdbc-dbcp2`
 
 ```mermaid
 C4Component
-title Component Diagram - log4j-jdbc-dbcp2
+title C3 Component Diagram - log4j-jdbc-dbcp2
 
-Container_Ext(core, "JDBC Appender", "Appender from log4j-core")
+Container_Ext(core, "log4j-core",, "Runtime logging engine")
 System_Ext(db, "Relational Database", "External database system")
 
 Container_Boundary(jdbc2, "log4j-jdbc-dbcp2") {
 
-    Component(pcs, "PoolingDriverConnectionSource", "ConnectionSource SPI", "Provides pooled JDBC connections")
-    Component(dbcp, "Commons DBCP Pool", "Connection Pool", "Manages JDBC connection pooling")
+    Component(pcs, "PoolingDriverConnectionSource",, "ConnectionSource SPI", "Provides pooled JDBC connections")
+    Component(dbcp, "Commons DBCP Pool",, "Connection Pool", "Manages JDBC connection pooling")
 }
 
 Rel(core, pcs, "requests JDBC connections from")
@@ -272,22 +298,22 @@ Rel(core, db, "writes log events to")
 
 ```mermaid
 C4Container
-title Module Dependency Overview
+title Module Dependency Overview in C3 Component Level
 
 System_Boundary(log4j2, "Apache Log4j2") {
 
-    Container(jdbc, "log4j-jdbc-dbcp2", "Java Library", "JDBC connection pooling integration")
-    Container(core, "log4j-core", "Java Library", "Runtime logging engine")
-    Container(api, "log4j-api", "Java Library", "Public logging API")
-    Container(slf2, "log4j-slf4j2-impl", "Java Library", "SLF4J 2 adapter")
-    Container(ltj, "log4j-layout-template-json", "Java Library", "JSON Layout implementation")
+    Container(jdbc, "log4j-jdbc-dbcp2",, "Java Library", "JDBC connection pooling integration")
+    Container(core, "log4j-core",, "Java Library", "Runtime logging engine")
+    Container(api, "log4j-api",, "Java Library", "Public logging API")
+    Container(slf2, "log4j-slf4j2-impl",, "Java Library", "SLF4J 2 adapter")
+    Container(ltj, "log4j-layout-template-json",, "Java Library", "JSON Layout implementation")
     
     
 }
 
 Rel(core, api, "implements logging abstractions from")
-Rel(ltj, core, "implements Layout SPI from")
-Rel(jdbc, core, "provides JDBC ConnectionSource for")
+Rel(core, ltj, "uses Layout SPI implementation from")
+Rel(core, jdbc, "uses JDBC ConnectionSource from")
 Rel(slf2, api, "adapts SLF4J calls onto")
 ```
 
@@ -390,10 +416,10 @@ At component level, the architecture generally maintains high cohesion by assign
 
 | Finding | Type | Explanation | Evidence | Location |
 |---|---|---|---|---|
-| Open/Closed Principle through Plugin System | Architectural Strength | The plugin architecture allows appenders, layouts, and filters to be extended without modifying existing runtime components. Modules such as `log4j-layout-template-json` integrate through extension points while remaining decoupled from the internal logging pipeline. | `Plugin.java` extension mechanism and SPI-based plugin registration. | `log4j-core` → Plugin System |
-| API/Core separation improves modular extensibility | Architectural Strength | `log4j-api` defines the public logging abstractions while `log4j-core` provides the runtime implementation. Peripheral modules integrate primarily through APIs and SPI contracts rather than direct runtime modification. | Dependency analysis identified approximately 816 import edges from `log4j-core` to `log4j-api`, confirming that the API module acts as the central architectural boundary within the selected scope. | Relationship between `log4j-api` and `log4j-core` |
-| Single Responsibility Principle trade-off in `LoggerContext` | Architectural Trade-off | `LoggerContext` coordinates runtime state, lifecycle management, configuration handling, and reconfiguration workflows. Centralized coordination simplifies runtime management but increases component complexity. | `LoggerContext` interacts with configuration loading, runtime state management, and reconfiguration subsystems. | `log4j-core` → `LoggerContext` |
-| Adapter-based integration supports Interface Segregation | Architectural Strength | The `log4j-slf4j2-impl` module isolates SLF4J interoperability concerns into dedicated adapter components, preventing external logging abstractions from leaking into runtime internals. | `Log4jLogger` and `Log4jServiceProvider` isolate SLF4J API dependencies from `log4j-core`. | `log4j-slf4j2-impl` |
+| Open/Closed Principle through Plugin System | Architectural Strength | The plugin architecture allows appenders, layouts, and filters to be extended without modifying existing runtime components. Modules such as `log4j-layout-template-json` integrate through extension points while remaining decoupled from the internal logging pipeline. | `org.apache.logging.log4j.core.config.plugins.Plugin`, C3 Plugin System component, and `JsonTemplateLayout` integration through the Layout SPI. | `log4j-core` → Plugin System |
+| API/Core separation improves modular extensibility | Architectural Strength | `log4j-api` defines the public logging abstractions while `log4j-core` provides the runtime implementation. Peripheral modules integrate primarily through APIs and SPI contracts rather than direct runtime modification. | Dependency analysis artifact `architecture_handoff_packet.md`; approximately 816 import edges between `log4j-core` and `log4j-api`; C3 Logger API and `LoggerContext` components. | Relationship between `log4j-api` and `log4j-core` |
+| Single Responsibility Principle trade-off in `LoggerContext` | Architectural Trade-off | `LoggerContext` coordinates runtime state, lifecycle management, configuration handling, and reconfiguration workflows. Centralized coordination simplifies runtime management but increases component complexity. | `org.apache.logging.log4j.core.LoggerContext`; C3 `LoggerContext` and Configuration components. | `log4j-core` → `LoggerContext` |
+| Adapter-based integration supports Interface Segregation | Architectural Strength | The `log4j-slf4j2-impl` module isolates SLF4J interoperability concerns into dedicated adapter components, preventing external logging abstractions from leaking into runtime internals. | `Log4jLogger`, `Log4jLoggerFactory`, and `Log4jServiceProvider`; C3 adapter components in `log4j-slf4j2-impl`. | `log4j-slf4j2-impl` |
 
 ---
 
@@ -413,7 +439,7 @@ At component level, the architecture generally maintains high cohesion by assign
 
 #### Characteristic 3 - Maintainability
 - **Definition:** The ability of the system to support modification, extension, and long-term evolution/support with minimal impact on existing components.
-- **How Supported:** Log4j2 separates API abstractions, runtime implementations, adapters, and extension modules into distinct *`Maven artifacts`*. Components communicate primarily through interfaces, SPIs, and plugin contracts, reducing direct subsystem dependency.
+- **How Supported:** Log4j2 separates API abstractions, runtime implementations, adapters, and extension modules into distinct `Maven artifacts`. Components communicate primarily through interfaces, SPIs, and plugin contracts, reducing direct subsystem dependency.
 - **Evidence:** The separation between `log4j-api`, `log4j-core`, `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2` isolates responsibilities into dedicated modules connected through APIs and SPIs. This modularization allows features such as JSON layouts, SLF4J adaptation, and JDBC connection pooling to evolve independently without modifying the primary runtime pipeline.
 
 #### Characteristic 4 - Performance and Scalability
@@ -442,7 +468,7 @@ The dependency structure reflects a hub-and-spoke architecture centered around `
 
 The selected Log4j2 modules demonstrate a modular and extensible architecture centered around the separation between `log4j-api` and `log4j-core`. The architecture strongly supports extensibility through plugin-based components, SPI-driven integration mechanisms, and adapter modules such as `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2`.
 
-The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle and Interface Segregation Principle. The architecture also demonstrates strong modular separation between API abstractions, runtime implementations, and extension modules through the use of SPIs, adapters, and plugin-based integration. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remain, especially in runtime coordination components such as `LoggerContext`, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
+The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle and Interface Segregation Principle. The architecture also demonstrates strong modular separation between API abstractions, runtime implementations, and extension modules through the use of SPIs, adapters, and plugin-based integration. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remains present, especially in runtime coordination components such as `LoggerContext`, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
 
 Overall, the analyzed architecture demonstrates strong modular decomposition, high component cohesion, and controlled coupling around the API/Core boundary while maintaining extensibility, interoperability, maintainability, and runtime performance across the selected scope.
 
