@@ -10,11 +10,12 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
 
 ## Findings
 
-- [ ] Problem: C4 diagrams do not consistently preserve connected parent-level context across levels.
+- [x] Problem: C4 diagrams do not consistently preserve connected parent-level context across levels.
   Why it is a problem: Component diagrams should show the connected containers and external systems that interact with the components; container diagrams should show the connected external systems; this context should be carried recursively from C1 to C2 to C3. Without this, the reader cannot easily trace the same relationship across abstraction levels.
   Suggested fix: For each C3 diagram, include the relevant connected container(s) and external system(s) as context. For each C2 diagram, include the relevant external system(s). Keep the same relationship meaning when moving between levels.
   Owner: Davide for C1/C2, Yaman for C3
   > Davide: completed for C1/C2 (2026-05-29). C2 carries the C1 external actors (`App`, `SLF4J 2 Clients`) and the external destination systems (File System, Console, Network Endpoints, JDBC Databases); C3 portion remains with Yaman.
+  > Yaman: completed C3 (2026/05/31). diagrams are interconnected with each other. Ex: API and CORE connections are now can be seen in C3 level diagrams.
 
 - [x] Problem: The C1 context diagram still models configuration as an external system.
   Why it is a problem: Configuration is not an external actor/system at context level; showing it as an external system makes the C1 boundary misleading and inconsistent with the later container/component diagrams.
@@ -22,29 +23,33 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
   Owner: Davide
   > Davide: done (2026-05-29). Removed the `Configuration Files` external system and its relation from C1; the Context Description now states configuration is modelled at the container/component level.
 
-- [ ] Problem: Naming is not fully consistent across all C4 diagrams.
+- [x] Problem: Naming is not fully consistent across all C4 diagrams.
   Why it is a problem: The same module, container, component, or external system may appear with slightly different names across C1/C2/C3, which makes cross-diagram comparison harder and weakens traceability.
   Suggested fix: Create one naming convention and reuse it everywhere, including capitalization and module names such as `log4j-api`, `log4j-core`, `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2`.
   Owner: Davide for C1/C2, Yaman for C3
   > Davide: completed for C1/C2 (2026-05-29). C1/C2 use the canonical module names consistently; C3 portion remains with Yaman.
+  > Yaman: All C3 level diagrams renamed to be more clear with its corresponging model (2026/05/31).
 
-- [ ] Problem: Diagram levels are not repeated explicitly for every diagram.
+- [x] Problem: Diagram levels are not repeated explicitly for every diagram.
   Why it is a problem: Readers should immediately know whether each diagram is C1, C2, or C3, especially when several diagrams appear close together.
   Suggested fix: Repeat the C4 level in every diagram title/caption, for example `C3 Component Diagram - log4j-core`, `C3 Component Diagram - log4j-api`, and so on.
   Owner: Davide for C1/C2, Yaman for C3
   > Davide: completed for C1/C2 (2026-05-29). Titles now read `C1 System Context Diagram - Apache Log4j2` and `C2 Container Diagram - Apache Log4j2`; C3 portion remains with Yaman.
+  > Yaman: C3 section rename is completed (2026/05/31). Titles are now using their Component Level name.
 
-- [ ] Problem: Several relationship labels are too generic, for example only `uses` or `implements`.
+- [x] Problem: Several relationship labels are too generic, for example only `uses` or `implements`.
   Why it is a problem: Generic labels do not explain the actual interaction and do not satisfy the request for a small description or method on every arrow.
   Suggested fix: Give every arrow a short concrete label describing the called API, method, protocol, or responsibility, such as `calls Logger API`, `creates LogEvent`, `loads configuration`, `writes JDBC event`, or `adapts SLF4J calls`.
   Owner: Davide for C1/C2, Yaman for C3
   > Davide: completed for C1/C2 (2026-05-29). C2 arrows now use concrete labels (e.g. `calls Logger API`, `delegates SLF4J calls to Logger API`, `implements logging abstractions of`, `formats events via JSON Layout SPI`, `obtains pooled JDBC connections via`); C3 portion remains with Yaman.
+  > Yaman: changes completed for C3 (2026/05/31). In the diagrams the connection roads are now use more concrete labels (ex: `formats log events using`, `extends layouts via SPI`, `creates and manages logger contexts through` and so on).
 
-- [ ] Problem: Some arrows overlap with other components, containers, or labels.
+- [x] Problem: Some arrows overlap with other components, containers, or labels.
   Why it is a problem: Overlapping arrows reduce readability and make the diagram look inconsistent even when the model is correct.
   Suggested fix: After content corrections, adjust diagram layout, direction, grouping, and relationship ordering so arrows do not cross through unrelated elements or cover labels.
   Owner: Davide for C1/C2, Yaman for C3
   > Davide: open. The C1/C2 content corrections are done; the Mermaid C4 renderer auto-lays out these diagrams and removing the configuration node already reduced C1 crossings. Left unchecked pending a visual render pass and the C3 portion (Yaman).
+  > Yaman: The problem with the overlapping/on top wording is the diagram renderer we use, Mermaid. Some changes are made that will increases the readability of the C3 diagrams. but it still is scrambled.
 
 ## Priority
 
