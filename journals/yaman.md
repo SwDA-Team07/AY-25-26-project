@@ -67,6 +67,21 @@
 
 ---
 
+## Entry 5
+### [2026-05-31 & 2026-06-01]
+## **Activities:**
+* Pushed contents into the "architecture.md".
+* Pushed diagrams into the "architecture.md".
+* Pushed contents into the "c4_diagrams_review_cycle_2.md"
+
+**Contribution to reports:**
+
+* Overview: An overview of the component level has been pushed with its SOLID findings Evidences. Changes in the grammer and format. Changed diagrams to be more in control with reviews made by our teammates. Added markups and backticks to the report.
+* Design: No changes has been made.
+* Architecture: Component Level (C3) contents has been added/changed.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:**
