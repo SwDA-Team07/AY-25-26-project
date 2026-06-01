@@ -51,6 +51,28 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
   > Davide: open. The C1/C2 content corrections are done; the Mermaid C4 renderer auto-lays out these diagrams and removing the configuration node already reduced C1 crossings. Left unchecked pending a visual render pass and the C3 portion (Yaman).
   > Yaman: The problem with the overlapping/on top wording is the diagram renderer we use, Mermaid. Some changes are made that will increases the readability of the C3 diagrams. but it still is scrambled.
 
+## Final Review Findings (2026-06-01)
+
+- [ ] Problem: Some diagrams still have overlapping arrows or labels.
+  Why it is a problem: Overlap reduces diagram readability.
+  Suggested fix: Render the diagrams and adjust the layout where needed.
+  Owner: Davide / Yaman
+
+- [ ] Problem: External destination names are not fully consistent across C1, C2, and C3.
+  Why it is a problem: The database destination is named differently, and `Log Aggregation / Monitoring` is not present in C3.
+  Suggested fix: Reuse the same external destination names across levels.
+  Owner: Yaman
+
+- [ ] Problem: The external database is modelled as a generic external system.
+  Why it is a problem: Mermaid C4 supports a specific external database element.
+  Suggested fix: Use Mermaid `SystemDb_Ext` for the external database where appropriate (see `references/links.md`).
+  Owner: Davide
+
+- [ ] Problem: Some C3 relationship directions are still ambiguous.
+  Why it is a problem: The C3 overview uses a different direction convention from some detailed C3 diagrams.
+  Suggested fix: Make the C3 relationship direction convention consistent across overview and detailed diagrams.
+  Owner: Yaman
+
 ## Priority
 
 1. Remove the configuration external system from C1.

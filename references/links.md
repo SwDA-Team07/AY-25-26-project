@@ -16,6 +16,9 @@ Useful online resources related to the Apache Log4j2 project analysis.
 
 ### C4 Model
 
+- **Mermaid C4 Diagram Syntax:** https://mermaid.ai/open-source/syntax/c4.html
+  - Official Mermaid C4 syntax reference.
+
 ### Software Architecture
 
 ### Code Analysis Tools
