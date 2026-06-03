@@ -14,7 +14,7 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
   Why it is a problem: Component diagrams should show the connected containers and external systems that interact with the components; container diagrams should show the connected external systems; this context should be carried recursively from C1 to C2 to C3. Without this, the reader cannot easily trace the same relationship across abstraction levels.
   Suggested fix: For each C3 diagram, include the relevant connected container(s) and external system(s) as context. For each C2 diagram, include the relevant external system(s). Keep the same relationship meaning when moving between levels.
   Owner: Davide for C1/C2, Yaman for C3
-  > Davide: completed for C1/C2 (2026-05-29). C2 carries the C1 external actors (`App`, `SLF4J 2 Clients`) and the external destination systems (File System, Console, Network Endpoints, JDBC Databases); C3 portion remains with Yaman.
+  > Davide: completed for C1/C2 (2026-05-29). C2 carries the C1 external actors (`App`, `SLF4J 2 API`) and the external destination systems (File System, Console, Network Endpoints, JDBC Databases, Log Aggregation / Monitoring); C3 portion remains with Yaman.
   > Yaman: completed C3 (2026/05/31). diagrams are interconnected with each other. Ex: API and CORE connections are now can be seen in C3 level diagrams.
 
 - [x] Problem: The C1 context diagram still models configuration as an external system.
@@ -57,16 +57,18 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
   Why it is a problem: Overlap reduces diagram readability.
   Suggested fix: Render the diagrams and adjust the layout where needed.
   Owner: Davide / Yaman
+  > Davide: C1/C2 reviewed (2026-06-03). After the cycle-2 content fixes the C1 and C2 diagrams render without overlapping arrows or labels. The residual overlap is in the denser C3 diagrams (Yaman), which is a known Mermaid auto-layout limitation; left unchecked until the C3 side is also clean.
 
 - [ ] Problem: External destination names are not fully consistent across C1, C2, and C3.
   Why it is a problem: The database destination is named differently, and `Log Aggregation / Monitoring` is not present in C3.
   Suggested fix: Reuse the same external destination names across levels.
   Owner: Yaman
 
-- [ ] Problem: The external database is modelled as a generic external system.
+- [x] Problem: The external database is modelled as a generic external system.
   Why it is a problem: Mermaid C4 supports a specific external database element.
   Suggested fix: Use Mermaid `SystemDb_Ext` for the external database where appropriate (see `references/links.md`).
   Owner: Davide
+  > Davide: done (2026-06-03). The `JDBC Databases` external system now uses `SystemDb_Ext` in both the C1 and C2 diagrams, rendering it with the dedicated database shape.
 
 - [ ] Problem: Some C3 relationship directions are still ambiguous.
   Why it is a problem: The C3 overview uses a different direction convention from some detailed C3 diagrams.
