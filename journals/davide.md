@@ -70,6 +70,23 @@
 
 ---
 
+### 2026-06-03
+
+## **Activities:**
+
+* Addressed the Davide-owned items in the "Final Review Findings (2026-06-01)" section of [`analysis/architecture/c4_diagrams_review_cycle_2.md`](../analysis/architecture/c4_diagrams_review_cycle_2.md), added by Filippo after the C3 pass.
+* Modelled the external `JDBC Databases` destination with Mermaid `SystemDb_Ext` (dedicated database shape) in both the C1 and C2 diagrams, per the Mermaid C4 syntax referenced in [`references/links.md`](../references/links.md); ticked that finding.
+* Reviewed the C1/C2 overlap finding: after the cycle-2 fixes the C1/C2 diagrams render without overlapping arrows/labels; annotated it and left it open pending the denser C3 diagrams (Yaman).
+* Fixed a stale note in the first finding that still referred to `SLF4J 2 Clients`; the C2 diagram uses `SLF4J 2 API`, consistent with C1/C3.
+
+**Contribution to reports:**
+
+* Overview: No changes.
+* Design: No changes.
+* Architecture: Switched the external database to `SystemDb_Ext` in C1/C2 and updated the C4 diagram review notes for the final-review findings.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:** None.
