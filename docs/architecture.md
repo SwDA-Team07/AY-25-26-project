@@ -20,7 +20,7 @@ C4Context
     System_Ext(DestFile, "File System", "Log file destination")
     System_Ext(DestConsole, "Console", "Standard output / error")
     System_Ext(DestNet, "Network Endpoints", "Syslog / HTTP / SMTP")
-    System_Ext(DestDb, "JDBC Databases", "Relational database destinations")
+    SystemDb_Ext(DestDb, "JDBC Databases", "Relational database destinations")
     System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
 
     Rel(App, Log4j2, "logs via Logger API")
@@ -68,7 +68,7 @@ C4Container
     System_Ext(DestFile, "File System", "Log file destination")
     System_Ext(DestConsole, "Console", "Standard output / error")
     System_Ext(DestNet, "Network Endpoints", "Syslog / HTTP / SMTP")
-    System_Ext(DestDb, "JDBC Databases", "Relational database destinations")
+    SystemDb_Ext(DestDb, "JDBC Databases", "Relational database destinations")
     System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
 
     Rel(App, Log4jApi, "calls Logger API")
