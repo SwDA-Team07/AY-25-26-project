@@ -53,16 +53,18 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
 
 ## Final Review Findings (2026-06-01)
 
-- [ ] Problem: Some diagrams still have overlapping arrows or labels.
+- [x] Problem: Some diagrams still have overlapping arrows or labels.
   Why it is a problem: Overlap reduces diagram readability.
   Suggested fix: Render the diagrams and adjust the layout where needed.
   Owner: Davide / Yaman
   > Davide: C1/C2 reviewed (2026-06-03). After the cycle-2 content fixes the C1 and C2 diagrams render without overlapping arrows or labels. The residual overlap is in the denser C3 diagrams (Yaman), which is a known Mermaid auto-layout limitation; left unchecked until the C3 side is also clean.
+  > Yaman: C3 level changes made(2026-06-04). A lot of changes made to up the readability but still Mermaid system still uses on-top layering.
 
-- [ ] Problem: External destination names are not fully consistent across C1, C2, and C3.
+- [x] Problem: External destination names are not fully consistent across C1, C2, and C3.
   Why it is a problem: The database destination is named differently, and `Log Aggregation / Monitoring` is not present in C3.
   Suggested fix: Reuse the same external destination names across levels.
   Owner: Yaman
+  > Yaman: C3 level changes made(2026-06-04). Destination names are changed to fix inconsistency between diagrams. 
 
 - [x] Problem: The external database is modelled as a generic external system.
   Why it is a problem: Mermaid C4 supports a specific external database element.
@@ -70,10 +72,11 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
   Owner: Davide
   > Davide: done (2026-06-03). The `JDBC Databases` external system now uses `SystemDb_Ext` in both the C1 and C2 diagrams, rendering it with the dedicated database shape.
 
-- [ ] Problem: Some C3 relationship directions are still ambiguous.
+- [x] Problem: Some C3 relationship directions are still ambiguous.
   Why it is a problem: The C3 overview uses a different direction convention from some detailed C3 diagrams.
   Suggested fix: Make the C3 relationship direction convention consistent across overview and detailed diagrams.
   Owner: Yaman
+  > Yaman: C3 level changes made(2026-06-04). Changed some diagram conventions to make them less ambiguous.
 
 ## Priority
 
