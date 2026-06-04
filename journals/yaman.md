@@ -82,10 +82,24 @@
 
 ---
 
+## Entry 6
+### [2026-06-04]
+## **Activities:**
+* Pushed diagrams into the "architecture.md".
+* Pushed contents into the "c4_diagrams_review_cycle_2.md"
+
+**Contribution to reports:**
+
+* Overview: Changed diagrams to be more in control with reviews made by our teammates. Added markups and backticks to the report.
+* Design: No changes has been made.
+* Architecture: Component Level (C3) contents has been added/changed.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:**
-  * Component Level (C3) part of the `architecture.md`, with its findings and reports.
+  * Component Level (C3) part of the `architecture.md`, with its diagrams.
 * **Design:**
   * Component Level (C3) part of the `architecture.md` and its general design. 
 * **Architecture:**
