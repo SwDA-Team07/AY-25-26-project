@@ -141,13 +141,14 @@ C4Component
 title C3 Component Diagram - log4j-core
 
 Container_Ext(api, "log4j-api",, "Public logging API")
-Container_Ext(json, "log4j-layout-template-json",, "JSON Layout module")
-Container_Ext(jdbc, "log4j-jdbc-dbcp2",, "JDBC integration")
-
-System_Ext(file, "File System", "Log file destination")
-System_Ext(ops, "Ops & Security Teams", "Configuration provider")
-System_Ext(console, "Console", "Standard output")
 System_Ext(net, "Network Endpoints", "Syslog / HTTP / SMTP")
+Container_Ext(jdbc, "log4j-jdbc-dbcp2",, "JDBC integration")
+System_Ext(logAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
+System_Ext(db, "JDBC Databases", "Relational database destinations")
+Container_Ext(json, "log4j-layout-template-json",, "JSON Layout module")
+System_Ext(file, "File System", "Log file destination")
+System_Ext(console, "Console", "Standard output")
+System_Ext(ops, "Ops & Security Teams", "Configuration provider")
 
 Container_Boundary(core, "log4j-core") {
 
@@ -170,7 +171,7 @@ Rel(plugin, app, "extends appenders via SPI")
 Rel(plugin, layout, "extends layouts via SPI")
 Rel(plugin, filter, "extends filters via SPI")
 Rel(async, app, "dispatches events asynchronously to")
-
+Rel(app, logAgg, "forwards logs to")
 Rel(ops, conf, "supplies configuration files to")
 Rel(api, ctx, "creates and manages logger contexts through")
 Rel(layout, json, "invokes Layout SPI implemented by")
@@ -178,6 +179,7 @@ Rel(app, jdbc, "obtains JDBC connections through")
 Rel(app, file, "writes log events")
 Rel(app, console, "writes log events")
 Rel(app, net, "writes log events")
+Rel(app, db, "writes log events through JDBC")
 ```
  
 #### Diagram of `log4j-api`
@@ -240,7 +242,6 @@ Rel(resolver, registry, "looks up field resolvers in")
 Rel(registry, builtin, "returns resolver implementations from")
 Rel(builtin, api, "reads LogEvent fields from")
 Rel(json, writer, "writes JSON output through")
-Rel(core, api, "implements logging abstractions of")
 
 ```
 
@@ -270,7 +271,6 @@ Rel(factory, adapter, "creates adapter logger")
 Rel(adapter, log4jApi, "delegates SLF4J Logger calls to")
 Rel(slf4jApi, marker, "routes marker operations through")
 Rel(slf4jApi, mdc, "routes MDC operations through")
-Rel(core, log4jApi, "implements logging abstractions of")
 ```
 
 #### Diagram of `log4j-jdbc-dbcp2`
@@ -280,7 +280,7 @@ C4Component
 title C3 Component Diagram - log4j-jdbc-dbcp2
 
 Container_Ext(core, "log4j-core",, "Runtime logging engine")
-System_Ext(db, "Relational Database", "External database system")
+System_Ext(db, "JDBC Databases", "Relational database destinations")
 
 Container_Boundary(jdbc2, "log4j-jdbc-dbcp2") {
 
@@ -298,7 +298,7 @@ Rel(core, db, "writes log events to")
 
 ```mermaid
 C4Container
-title Module Dependency Overview in C3 Component Level
+title C3 Component-Level Module Dependency Overview
 
 System_Boundary(log4j2, "Apache Log4j2") {
 
