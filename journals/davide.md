@@ -87,8 +87,23 @@
 
 ---
 
+### 2026-06-05
+
+## **Activities:**
+
+* Removed the `Ops & Security Teams` actor from all three diagrams where it appeared in [`docs/architecture.md`](../docs/architecture.md): deleted the `Person(Ops, ...)` entry and its `Rel(Ops, ...)` relationships from the C1 context diagram, the C2 container diagram, and the C3 `log4j-core` component diagram (where it was modelled as `System_Ext(ops, ...)`).
+* Fixed two nomenclature inconsistencies in the C3 `log4j-core` diagram to align with C1/C2: changed the `JDBC Databases` node from `System_Ext` to `SystemDb_Ext` (matching the dedicated database shape used in C1/C2), and corrected the `Console` description from `"Standard output"` to `"Standard output / error"` (matching C1/C2).
+
+**Contribution to reports:**
+
+* Overview: No changes.
+* Design: No changes.
+* Architecture: Removed the `Ops & Security Teams` actor from C1, C2, and C3 (`log4j-core`) diagrams; fixed `SystemDb_Ext` and Console description in C3 for cross-level nomenclature consistency.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:** None.
 * **Design:** None.
-* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope; converted C1 and C2 to Mermaid C4 syntax and consolidated all diagrams inline in `docs/architecture.md` by removing the duplicated `diagrams/` directory; addressed the Review Cycle 2 C1/C2 findings (removed configuration from C1, added C4 levels to titles, concrete arrow labels, consistent naming/backticks).
+* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope; converted C1 and C2 to Mermaid C4 syntax and consolidated all diagrams inline in `docs/architecture.md` by removing the duplicated `diagrams/` directory; addressed the Review Cycle 2 C1/C2 findings (removed configuration from C1, added C4 levels to titles, concrete arrow labels, consistent naming/backticks); removed the `Ops & Security Teams` actor from all diagrams and fixed cross-level nomenclature inconsistencies in the C3 `log4j-core` diagram.

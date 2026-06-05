@@ -11,7 +11,6 @@
 C4Context
     title C1 System Context Diagram - Apache Log4j2
 
-    Person(Ops, "Ops & Security Teams", "Configure and monitor the logging stack")
     System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
     System_Ext(SLF4J, "SLF4J 2 API", "Logging facade bridged to Log4j2")
 
@@ -24,7 +23,6 @@ C4Context
     System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
 
     Rel(App, Log4j2, "logs via Logger API")
-    Rel(Ops, Log4j2, "configures via config files, monitors via log output")
     Rel(SLF4J, Log4j2, "bridged by log4j-slf4j2-impl")
 
     Rel(Log4j2, DestFile, "writes log events")
@@ -53,7 +51,6 @@ configuration loader and plugins are relevant.
 C4Container
     title C2 Container Diagram - Apache Log4j2
 
-    Person(Ops, "Ops & Security Teams", "Configure and monitor the logging stack")
     System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
     System_Ext(SLF4J, "SLF4J 2 API", "Logging facade bridged to Log4j2")
 
@@ -72,8 +69,6 @@ C4Container
     System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
 
     Rel(App, Log4jApi, "calls Logger API")
-    Rel(Ops, Log4jCore, "supplies configuration files loaded by")
-    Rel(Ops, LogAgg, "monitors log output via")
     Rel(SLF4J, SLF4JImpl, "discovered via ServiceLoader")
     Rel(SLF4JImpl, Log4jApi, "delegates SLF4J calls to Logger API")
     Rel(Log4jCore, Log4jApi, "implements logging abstractions of")
@@ -144,11 +139,10 @@ Container_Ext(api, "log4j-api",, "Public logging API")
 System_Ext(net, "Network Endpoints", "Syslog / HTTP / SMTP")
 Container_Ext(jdbc, "log4j-jdbc-dbcp2",, "JDBC integration")
 System_Ext(logAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
-System_Ext(db, "JDBC Databases", "Relational database destinations")
+SystemDb_Ext(db, "JDBC Databases", "Relational database destinations")
 Container_Ext(json, "log4j-layout-template-json",, "JSON Layout module")
 System_Ext(file, "File System", "Log file destination")
-System_Ext(console, "Console", "Standard output")
-System_Ext(ops, "Ops & Security Teams", "Configuration provider")
+System_Ext(console, "Console", "Standard output / error")
 
 Container_Boundary(core, "log4j-core") {
 
@@ -172,7 +166,6 @@ Rel(plugin, layout, "extends layouts via SPI")
 Rel(plugin, filter, "extends filters via SPI")
 Rel(async, app, "dispatches events asynchronously to")
 Rel(app, logAgg, "forwards logs to")
-Rel(ops, conf, "supplies configuration files to")
 Rel(api, ctx, "creates and manages logger contexts through")
 Rel(layout, json, "invokes Layout SPI implemented by")
 Rel(app, jdbc, "obtains JDBC connections through")
