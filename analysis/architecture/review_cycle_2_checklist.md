@@ -42,3 +42,19 @@ Add one checkbox per issue found. If no issue is found, write: `Review completed
   Owner: Davide / Yaman
   > Davide: completed for C1/C2 prose (2026-05-29). The Context Description and the C1/C2 element labels use consistent backticked module names and concise phrasing. The C3/SOLID prose pass remains with Yaman.
   > Yaman: C3 level compeleted (2026/05/31-2026/06/01). Some wording errors are found in C3 section, Solid Findings and summary sections.
+
+## Final Review Notes - 2026-06-05
+
+- [ ] Problem: The C1 context description still says operations/security teams are external actors, but the current C1 diagram no longer shows that actor.
+  Why it is a problem: This creates a small mismatch between the diagram and the prose immediately below it.
+  Suggested fix: Either re-add the operations/security actor to the C1 diagram, or change the prose to say they are stakeholders rather than actors shown in the diagram.
+  
+
+- [ ] Problem: The `log4j-core` C3 diagram is very dense and wide compared with the other diagrams.
+  Why it is a problem: The diagram is technically complete, but it may be harder to read in the final Markdown/PDF because it contains many internal components plus several external context elements.
+  Suggested fix: Consider reducing the external context shown in the `log4j-core` C3 diagram, or split the diagram into a runtime pipeline view and an output/integration context view if readability is poor in the final render.
+  
+
+- [ ] Problem: A few minor grammar issues remain in `docs/architecture.md`.
+  Why it is a problem: The report is close to final, so small grammar errors stand out more during final evaluation.
+  Suggested fix: Fix examples such as "interacting with logging system" -> "interacting with the logging system" and "Some architectural trade-offs remains present" -> "Some architectural trade-offs remain present".
