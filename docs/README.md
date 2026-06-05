@@ -21,6 +21,8 @@ This directory contains the three main reports required for the project:
   * Context diagram
   * Container diagram
   * Component diagrams
+    The C4 diagrams are generated from the Structurizr DSL workspace at [`../diagrams/architecture/workspace.dsl`](../diagrams/architecture/workspace.dsl) and included as exported SVG files.
     Includes discussion of architectural characteristics and potential violations of SOLID principles
 
 All reports are written in Markdown and respect the required word limits.
+Non-C4 support diagrams in Overview and Design may still use Mermaid; Architecture C4 diagrams are maintained through Structurizr DSL.

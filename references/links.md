@@ -16,8 +16,17 @@ Useful online resources related to the Apache Log4j2 project analysis.
 
 ### C4 Model
 
+- **Structurizr DSL Documentation:** https://docs.structurizr.com/dsl
+  - Official Structurizr DSL documentation used for the C4 workspace model in `diagrams/architecture/workspace.dsl`.
+
+- **Structurizr CLI Export Command:** https://docs.structurizr.com/cli/export
+  - Official CLI export reference used to export the DSL workspace directly to SVG diagrams.
+
 - **Mermaid C4 Diagram Syntax:** https://mermaid.ai/open-source/syntax/c4.html
-  - Official Mermaid C4 syntax reference.
+  - Historical reference for the previous C4 diagram implementation before migration to Structurizr.
+
+- **Mermaid Documentation:** https://mermaid.js.org/
+  - Diagramming syntax still used for non-C4 diagrams in other reports, such as Overview and Design.
 
 ### Software Architecture
 

@@ -1,36 +1,13 @@
 # Software Architecture — Apache Log4j2
 
-**C4 Model Tool Used:** Mermaid diagrams embedded in Markdown.
+**C4 Model Tool Used:** Structurizr DSL workspace in [`diagrams/architecture/workspace.dsl`](../diagrams/architecture/workspace.dsl), exported directly as SVG diagrams in [`diagrams/architecture/export/`](../diagrams/architecture/export/).
 
 ---
 
 ## Context Level (C1)
 
 ### System Context Diagram
-```mermaid
-C4Context
-    title C1 System Context Diagram - Apache Log4j2
-
-    System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
-    System_Ext(SLF4J, "SLF4J 2 API", "Logging facade bridged to Log4j2")
-
-    System(Log4j2, "Apache Log4j2", "Java logging framework in scope of this analysis")
-
-    System_Ext(DestFile, "File System", "Log file destination")
-    System_Ext(DestConsole, "Console", "Standard output / error")
-    System_Ext(DestNet, "Network Endpoints", "Syslog / HTTP / SMTP")
-    SystemDb_Ext(DestDb, "JDBC Databases", "Relational database destinations")
-    System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
-
-    Rel(App, Log4j2, "logs via Logger API")
-    Rel(SLF4J, Log4j2, "bridged by log4j-slf4j2-impl")
-
-    Rel(Log4j2, DestFile, "writes log events")
-    Rel(Log4j2, DestConsole, "writes log events")
-    Rel(Log4j2, DestNet, "writes log events")
-    Rel(Log4j2, DestDb, "writes log events")
-    Rel(Log4j2, LogAgg, "forwards logs")
-```
+![C1 System Context Diagram - Apache Log4j2](../diagrams/architecture/export/c1-system-context.svg)
 
 ### Context Description
 Apache Log4j2 is a Java logging framework used as a library inside applications.
@@ -47,40 +24,7 @@ configuration loader and plugins are relevant.
 ## Container Level (C2)
 
 ### Container Diagram
-```mermaid
-C4Container
-    title C2 Container Diagram - Apache Log4j2
-
-    System_Ext(App, "Applications / Libraries", "Java applications that emit log calls")
-    System_Ext(SLF4J, "SLF4J 2 API", "Logging facade bridged to Log4j2")
-
-    System_Boundary(log4j2, "Apache Log4j2") {
-        Container(Log4jApi, "log4j-api", "Java", "Public logging API used by applications and adapters")
-        Container(Log4jCore, "log4j-core", "Java", "Logging implementation, configuration, filters, appenders, runtime pipeline")
-        Container(JsonLayout, "log4j-layout-template-json", "Java", "JSON layout templates for structured output")
-        Container(SLF4JImpl, "log4j-slf4j2-impl", "Java", "Adapter bridging SLF4J 2 calls to Log4j2 API")
-        Container(JdbcDbcp2, "log4j-jdbc-dbcp2", "Java, Apache DBCP2", "JDBC appender integration writing log events to databases")
-    }
-
-    System_Ext(DestFile, "File System", "Log file destination")
-    System_Ext(DestConsole, "Console", "Standard output / error")
-    System_Ext(DestNet, "Network Endpoints", "Syslog / HTTP / SMTP")
-    SystemDb_Ext(DestDb, "JDBC Databases", "Relational database destinations")
-    System_Ext(LogAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
-
-    Rel(App, Log4jApi, "calls Logger API")
-    Rel(SLF4J, SLF4JImpl, "discovered via ServiceLoader")
-    Rel(SLF4JImpl, Log4jApi, "delegates SLF4J calls to Logger API")
-    Rel(Log4jCore, Log4jApi, "implements logging abstractions of")
-    Rel(Log4jCore, JsonLayout, "formats events via JSON Layout SPI")
-    Rel(Log4jCore, JdbcDbcp2, "obtains pooled JDBC connections via")
-
-    Rel(Log4jCore, DestFile, "writes log events")
-    Rel(Log4jCore, DestConsole, "writes log events")
-    Rel(Log4jCore, DestNet, "writes log events")
-    Rel(JdbcDbcp2, DestDb, "writes log events over pooled JDBC connections")
-    Rel(Log4jCore, LogAgg, "forwards logs")
-```
+![C2 Container Diagram - Apache Log4j2](../diagrams/architecture/export/c2-container.svg)
 
 ### Container Description
 The analyzed scope is a set of Java library modules that are packaged together
@@ -129,186 +73,31 @@ performance and configurability over a strict inward-only dependency rule.
 
 ### Component Diagrams
 
-#### Diagram of `log4j-core`
+#### C3 Diagram of `log4j-core`
 
-```mermaid
-C4Component 
-title C3 Component Diagram - log4j-core
-
-Container_Ext(api, "log4j-api",, "Public logging API")
-System_Ext(net, "Network Endpoints", "Syslog / HTTP / SMTP")
-Container_Ext(jdbc, "log4j-jdbc-dbcp2",, "JDBC integration")
-System_Ext(logAgg, "Log Aggregation / Monitoring", "Downstream observability stacks")
-SystemDb_Ext(db, "JDBC Databases", "Relational database destinations")
-Container_Ext(json, "log4j-layout-template-json",, "JSON Layout module")
-System_Ext(file, "File System", "Log file destination")
-System_Ext(console, "Console", "Standard output / error")
-
-Container_Boundary(core, "log4j-core") {
-
-    Component(ctx, "LoggerContext",, "Runtime state and lifecycle manager")
-    Component(conf, "Configuration",, "Configuration loading and management")
-    Component(lconf, "LoggerConfig",, "Log event routing rules")
-    Component(app, "Appender",, "Log event output destination")
-    Component(filter, "Filter",, "Log event filtering rules")
-    Component(plugin, "Plugin System",, "SPI-based extension framework")
-    Component(layout, "Layout",, "Log event formatting engine")
-    Component(async, "Async Logger",, "Asynchronous event processing")
-}
-
-Rel(ctx, conf, "loads configuration from")
-Rel(conf, lconf, "creates logging configuration")
-Rel(lconf, app, "routes log events to")
-Rel(app, layout, "formats log events using")
-Rel(lconf, filter, "applies filtering rules via")
-Rel(plugin, app, "extends appenders via SPI")
-Rel(plugin, layout, "extends layouts via SPI")
-Rel(plugin, filter, "extends filters via SPI")
-Rel(async, app, "dispatches events asynchronously to")
-Rel(app, logAgg, "forwards logs to")
-Rel(api, ctx, "creates and manages logger contexts through")
-Rel(layout, json, "invokes Layout SPI implemented by")
-Rel(app, jdbc, "obtains JDBC connections through")
-Rel(app, file, "writes log events")
-Rel(app, console, "writes log events")
-Rel(app, net, "writes log events")
-Rel(app, db, "writes log events through JDBC")
-```
+![C3 Component Diagram - log4j-core](../diagrams/architecture/export/c3-log4j-core.svg)
  
-#### Diagram of `log4j-api`
+#### C3 Diagram of `log4j-api`
 
-```mermaid
-C4Component
-title C3 Component Diagram - log4j-api
+![C3 Component Diagram - log4j-api](../diagrams/architecture/export/c3-log4j-api.svg)
 
-System_Ext(app, "Applications / Libraries", "Java applications that emit log calls")
-Container_Ext(slf4jImpl, "log4j-slf4j2-impl",, "SLF4J adapter")
-Container(core, "log4j-core", "Java Library", "Runtime logging engine")
+#### C3 Diagram of `log4j-layout-template-json`
 
-Container_Boundary(api, "log4j-api") {
+![C3 Component Diagram - log4j-layout-template-json](../diagrams/architecture/export/c3-log4j-layout-template-json.svg)
 
-    Component(status, "StatusLogger",, "Internal status diagnostics")
-    Component(lf, "LoggerFactory / Provider",, "Provider discovery mechanism")
-    Component(logger, "Logger API",, "Public logging interface")
-    Component(event, "LogEvent Contract",, "Log event abstraction")
-    Component(lm, "LogManager",, "Logger creation and lookup")
-    Component(ext, "ExtendedLogger",, "Extended logging operations")
-    Component(msgFactory, "MessageFactory",, "Structured message creation")
-    Component(msg, "Message",, "Log message abstraction")
-    Component(simple, "SimpleLogger",, "Fallback logging implementation")    
-}
+#### C3 Diagram of `log4j-slf4j2-impl`
 
-Rel(app, lm, "requests logger via")
-Rel(lm, lf, "resolves provider using")
-Rel(lf, logger, "creates logger instance")
-Rel(logger, ext, "extends API with")
-Rel(logger, msgFactory, "builds messages via")
-Rel(msgFactory, msg, "creates Message instances")
-Rel(logger, event, "emits log events")
-Rel(lm, simple, "fallback when no core available")
-Rel(lm, status, "publishes internal diagnostics to")
-Rel(slf4jImpl, lm, "obtains loggers through")
-Rel(core, logger, "implements logging abstractions exposed by")
-```
+![C3 Component Diagram - log4j-slf4j2-impl](../diagrams/architecture/export/c3-log4j-slf4j2-impl.svg)
 
-#### Diagram of `log4j-layout-template-json`
+#### C3 Diagram of `log4j-jdbc-dbcp2`
 
-```mermaid
-C4Component
-title C3 Component Diagram - log4j-layout-template-json
+![C3 Component Diagram - log4j-jdbc-dbcp2](../diagrams/architecture/export/c3-log4j-jdbc-dbcp2.svg)
 
-Container_Ext(core, "log4j-core",, "Provides Layout SPI")
-Container_Ext(api, "log4j-api",, "Provides LogEvent model")
+#### Module Dependency Overview (Container-Level View)
 
-Container_Boundary(layout, "log4j-layout-template-json") {
+![Module Dependency Overview - Apache Log4j2](../diagrams/architecture/export/module-dependency-overview.svg)
 
-    Component(json, "JsonTemplateLayout",, "JSON layout implementation")
-    Component(resolver, "TemplateResolver",, "JSON template resolution engine")
-    Component(registry, "EventResolver Registry",, "Event field resolver registry")
-    Component(builtin, "Built-in EventResolvers",, "Standard Field Extractors")
-    Component(writer, "JsonWriter",, "Low-allocation JSON serializer")
-}
-
-Rel(core, json, "invokes Layout SPI on")
-Rel(json, resolver, "resolves template using")
-Rel(resolver, registry, "looks up field resolvers in")
-Rel(registry, builtin, "returns resolver implementations from")
-Rel(builtin, api, "reads LogEvent fields from")
-Rel(json, writer, "writes JSON output through")
-
-```
-
-#### Diagram of `log4j-slf4j2-impl`
-
-```mermaid
-C4Component
-title C3 Component Diagram - log4j-slf4j2-impl
-
-System_Ext(slf4jApi, "SLF4J 2 API", "External logging facade")
-Container_Ext(core, "log4j-core",, "Runtime logging engine")
-Container_Ext(log4jApi, "log4j-api",, "Log4j2 public API")
-
-
-Container_Boundary(slf4jImpl, "log4j-slf4j2-impl") {
-
-    Component(mdc, "Log4jMDCAdapter",, "SLF4J MDC bridge")
-    Component(provider, "Log4jServiceProvider",, "SLF4J ServiceLoader provider")
-    Component(factory, "Log4jLoggerFactory",, "SLF4J logger factory adapter")
-    Component(adapter, "Log4jLogger",, "SLF4J-to-Log4j adapter")
-    Component(marker, "Log4jMarkerFactory",, "SLF4J marker bridge")
-}
-
-Rel(slf4jApi, provider, "discovers provider through ServiceLoader")
-Rel(provider, factory, "provides logger factory")
-Rel(factory, adapter, "creates adapter logger")
-Rel(adapter, log4jApi, "delegates SLF4J Logger calls to")
-Rel(slf4jApi, marker, "routes marker operations through")
-Rel(slf4jApi, mdc, "routes MDC operations through")
-```
-
-#### Diagram of `log4j-jdbc-dbcp2`
-
-```mermaid
-C4Component
-title C3 Component Diagram - log4j-jdbc-dbcp2
-
-Container_Ext(core, "log4j-core",, "Runtime logging engine")
-System_Ext(db, "JDBC Databases", "Relational database destinations")
-
-Container_Boundary(jdbc2, "log4j-jdbc-dbcp2") {
-
-    Component(pcs, "PoolingDriverConnectionSource",, "ConnectionSource SPI", "Provides pooled JDBC connections")
-    Component(dbcp, "Commons DBCP Pool",, "Connection Pool", "Manages JDBC connection pooling")
-}
-
-Rel(core, pcs, "requests JDBC connections from")
-Rel(pcs, dbcp, "manages pooled connections via")
-Rel(dbcp, db, "opens JDBC connections to")
-Rel(core, db, "writes log events to")
-```
-
-#### Module Dependency Overview
-
-```mermaid
-C4Container
-title C3 Component-Level Module Dependency Overview
-
-System_Boundary(log4j2, "Apache Log4j2") {
-
-    Container(jdbc, "log4j-jdbc-dbcp2",, "Java Library", "JDBC connection pooling integration")
-    Container(core, "log4j-core",, "Java Library", "Runtime logging engine")
-    Container(api, "log4j-api",, "Java Library", "Public logging API")
-    Container(slf2, "log4j-slf4j2-impl",, "Java Library", "SLF4J 2 adapter")
-    Container(ltj, "log4j-layout-template-json",, "Java Library", "JSON Layout implementation")
-    
-    
-}
-
-Rel(core, api, "implements logging abstractions from")
-Rel(core, ltj, "uses Layout SPI implementation from")
-Rel(core, jdbc, "uses JDBC ConnectionSource from")
-Rel(slf2, api, "adapts SLF4J calls onto")
-```
+This overview is a container/module relationship view, not a C3 component decomposition.
 
 The 816 cross-module import edges between `log4j-core` and `log4j-api` and the central hotspots `Plugin.java`, `LogEvent.java`, and `StatusLogger.java` (see [architecture_handoff_packet.md](../analysis/dependencies/architecture_handoff_packet.md)) confirm that the API/Core split is the main extensibility boundary, while the three peripheral modules plug into that boundary via the Layout, Appender, and provider SPIs.
 
