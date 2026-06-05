@@ -1,6 +1,6 @@
 # Journal — Yaman Yamak - 355144
 
-## Entries
+# Entries
 
 ## Entry 1
 ### [2026-05-18]
@@ -96,8 +96,23 @@
 
 ---
 
-## Summary of Contributions
+## Entry 7
+### [2026-06-05]
+## **Activities:**
+* Pushed contents into the "review_cycle_2_checklist.md" in overview section.
+* Pushed contents into the "review_cycle_2_checklist.md" in design section.
 
+**Contribution to reports:**
+
+* Overview: No changes has been made.
+* Design: No changes has been made.
+* Architecture: No changes has been made.
+
+---
+
+# Summary of Contributions (Total Work Done)
+* **Analysis**
+  * Added findings to checklists of the overview.md and design.md
 * **Overview:**
   * Component Level (C3) part of the `architecture.md`, with its diagrams.
 * **Design:**
