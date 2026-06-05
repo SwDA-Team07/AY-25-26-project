@@ -51,17 +51,21 @@ The following diagram summarizes the selected analysis scope:
 
 ```mermaid
 flowchart TD
-    A[Applications / Libraries] -->|use| B[log4j-api]
-    B -->|implemented by| C[log4j-core]
+    A[Applications / Libraries] -->|calls Logger API| B[log4j-api]
+    C[log4j-core] -->|implements logging abstractions of| B
 
     C -->|provides runtime logging features| D[Configuration, Filters, Layouts, Appenders]
 
-    C -->|uses for JSON output| E[log4j-layout-template-json]
+    C -->|uses Layout SPI implementation from| E[log4j-layout-template-json]
     F[SLF4J 2 clients] -->|bridged by| G[log4j-slf4j2-impl]
-    G -->|delegates to| B
+    G -->|delegates SLF4J calls to| B
 
-    C -->|uses for JDBC appending| H[log4j-jdbc-dbcp2]
+    C -->|uses JDBC ConnectionSource from| H[log4j-jdbc-dbcp2]
 ```
+
+The scope diagram is a high-level responsibility and integration view, not a
+complete dependency graph. Detailed dependency directions and evidence are
+reported in the Design and Architecture reports.
 
 This scope covers the relationship between the public API and the
 implementation, the main runtime extension mechanisms, one structured-output
