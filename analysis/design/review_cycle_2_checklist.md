@@ -21,7 +21,11 @@ Check whether the Design report is clear, understandable, and consistent with th
 
 Add one checkbox per issue found. If no issue is found, write: `Review completed: no issues found.`
 
-- [ ] Problem:  
+- [x] Review completed: no issues found.
+
+> Below is problem template to use incase a problem found.
+
+> Problem:  
   Why it is a problem:  
   Suggested fix:  
   Owner:
