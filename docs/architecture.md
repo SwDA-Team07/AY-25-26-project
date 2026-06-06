@@ -11,13 +11,15 @@
 
 ### Context Description
 Apache Log4j2 is a Java logging framework used as a library inside applications.
-The system boundary includes the `log4j-api` and implementation modules; external
-actors include application developers, operations and security teams, and
-systems that receive log output. Log4j2 accepts log calls from applications or the
-SLF4J 2 facade and delivers formatted log events to files, consoles, network
-endpoints, databases, or monitoring stacks. Configuration is not an external system
-at context level; it is modelled at the container and component levels where the
-configuration loader and plugins are relevant.
+The system boundary includes the `log4j-api` and implementation modules. The C1
+diagram shows the external software systems that interact with Log4j2 at runtime:
+the applications and libraries that call the Logger API, the SLF4J 2 facade bridged
+into Log4j2, and the destination systems that receive log output (file system,
+console, network endpoints, JDBC databases, and log aggregation / monitoring).
+Application developers, operations, security, and DevOps teams are stakeholders of
+the framework rather than actors shown in the diagram. Configuration is not an
+external system at context level; it is modelled at the container and component
+levels where the configuration loader and plugins are relevant.
 
 ---
 
