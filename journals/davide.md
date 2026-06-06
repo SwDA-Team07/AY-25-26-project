@@ -102,8 +102,24 @@
 
 ---
 
+### 2026-06-06
+
+## **Activities:**
+
+* Carried out my Review Cycle 2 review of the Design report and recorded the findings in [`analysis/design/review_cycle_2_checklist.md`](../analysis/design/review_cycle_2_checklist.md), focused on consistency between Design and the Overview/Architecture reports: flagged a Strategy summary-table vs detail mismatch, the `JsonLayout` (core) vs `JsonTemplateLayout` naming overlap with the Architecture report, and an Adapter Target label inconsistency, and confirmed the cross-report invariants (five-module scope, 92,131 SLOC / 929 files, snapshot commit, `log4j-core -> log4j-api` 816-import direction) are consistent across Overview, Design, and Architecture.
+* Resolved the open final-review C1 item by aligning the C1 Context Description in [`docs/architecture.md`](../docs/architecture.md) with the C1 diagram: developers, operations, security, and DevOps teams are now described as stakeholders rather than as actors shown in the diagram, consistent with the Overview report. Prose-only change; no diagram re-export.
+* Closed my architecture review items: ticked the C1 finding in [`analysis/architecture/review_cycle_2_checklist.md`](../analysis/architecture/review_cycle_2_checklist.md), recorded my C1/C2 half of the still-open "Both" coherence and wording items in [`analysis/architecture/review_cycle_1_checklist.md`](../analysis/architecture/review_cycle_1_checklist.md), and noted in [`analysis/architecture/c4_diagrams_review_cycle_2.md`](../analysis/architecture/c4_diagrams_review_cycle_2.md) that the C1/C2 Mermaid overlap finding is superseded by the teammate migration of the diagrams to a Structurizr DSL workspace exported as SVG.
+
+**Contribution to reports:**
+
+* Overview: No changes.
+* Design: Added my Review Cycle 2 reviewer findings (Design–Overview–Architecture consistency) to [`analysis/design/review_cycle_2_checklist.md`](../analysis/design/review_cycle_2_checklist.md); `docs/design.md` itself unchanged.
+* Architecture: Reworded the C1 Context Description to match the C1 diagram (stakeholders vs actors) in [`docs/architecture.md`](../docs/architecture.md), and updated the related review/checklist files to close my C1/C2 items.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:** None.
-* **Design:** None.
-* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope; converted C1 and C2 to Mermaid C4 syntax and consolidated all diagrams inline in `docs/architecture.md` by removing the duplicated `diagrams/` directory; addressed the Review Cycle 2 C1/C2 findings (removed configuration from C1, added C4 levels to titles, concrete arrow labels, consistent naming/backticks); removed the `Ops & Security Teams` actor from all diagrams and fixed cross-level nomenclature inconsistencies in the C3 `log4j-core` diagram.
+* **Design:** Performed the Review Cycle 2 consistency review of the Design report (findings recorded in [`analysis/design/review_cycle_2_checklist.md`](../analysis/design/review_cycle_2_checklist.md)); no direct edits to `docs/design.md`.
+* **Architecture:** Validated C1/C2 sections for completeness and coverage; reworked C3 component diagrams and descriptions to match the five-module scope; converted C1 and C2 to Mermaid C4 syntax and consolidated all diagrams inline in `docs/architecture.md` by removing the duplicated `diagrams/` directory; addressed the Review Cycle 2 C1/C2 findings (removed configuration from C1, added C4 levels to titles, concrete arrow labels, consistent naming/backticks); removed the `Ops & Security Teams` actor from all diagrams and fixed cross-level nomenclature inconsistencies in the C3 `log4j-core` diagram; and finally aligned the C1 Context Description prose with the C1 diagram (framing developers/operations/security as stakeholders rather than actors) and closed the corresponding Review Cycle 1/2 checklist items.
