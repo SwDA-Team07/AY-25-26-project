@@ -31,9 +31,10 @@ then evaluates configuration and filters, and appenders/layouts deliver the
 final output to targets such as files, consoles, network endpoints, or
 structured formats.
 
-This project does not analyze the entire Log4j2 repository. To keep the work
-aligned with the course size target, the analysis focuses on five production
-modules:
+This project does not analyze the entire Log4j2 repository. Instead, the
+analysis focuses on five production modules that represent the main logging
+API, runtime implementation, output formatting, adapter, and infrastructure
+integration concerns:
 
 - `log4j-api`, the public API used by application and library code.
 - `log4j-core`, the main implementation module, including configuration,
@@ -44,8 +45,7 @@ modules:
 
 These modules were selected because together they cover the main API, the core
 implementation, structured logging output, and examples of integration with
-other logging or output technologies while keeping the analyzed codebase close
-to the course size target.
+other logging or output technologies.
 
 The following diagram summarizes the selected analysis scope:
 
@@ -73,8 +73,9 @@ component, and two integration-oriented modules. Test modules, documentation
 modules, fuzzing modules, and most peripheral adapters are intentionally
 excluded from the quantitative design analysis.
 
-Detailed dependency evidence for this scope is reported in the Design report and
-in the generated analysis artifacts.
+Detailed dependency evidence for this scope is reported in the
+[Design report](design.md) and in the generated
+[analysis artifacts](../analysis/dependencies/).
 
 ## Code Statistics
 
@@ -82,6 +83,13 @@ The statistics below refer to the selected scope only, unless otherwise stated.
 They are based on Java production files under `src/main/java` and on the
 reproducible dependency analysis artifacts in
 [`analysis/dependencies`](../analysis/dependencies/).
+The file and SLOC counts come from
+[`tools/scripts/generate_dependency_analysis.py`](../tools/scripts/generate_dependency_analysis.py),
+which writes the scoped module totals to
+[`scope_loc.csv`](../analysis/dependencies/scope_loc.csv) and the aggregate
+snapshot to [`summary.txt`](../analysis/dependencies/summary.txt). Repository
+metadata such as contributors and activity status was recorded from the public
+GitHub project pages on 2026-05-02.
 
 | Metric | Value |
 |--------|-------|
