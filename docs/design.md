@@ -1,9 +1,9 @@
-# Software Design — Apache Log4j2
+# Software Design - Apache Log4j2
 
 ## Dependencies
 
 ### Analysis Method
-This dependency analysis is based on a reproducible static + history workflow implemented in:
+This dependency analysis combines static import extraction with recent co-change evidence. The workflow is reproducible and documented in:
 
 - [generate_dependency_analysis.py](../tools/scripts/generate_dependency_analysis.py)
 - [Dependency Runbook](../analysis/dependencies/README.md)
@@ -30,153 +30,102 @@ Observed scope size:
 - 54 commits scanned, 18 commits contributing at least one file pair
 
 ### Code Dependencies
-Code dependencies are extracted from Java `import` statements across scoped production files.
-Evidence files:
+Code dependencies are extracted from Java `import` statements across the scoped production files. The main evidence files are:
 
 - [import_edges.csv](../analysis/dependencies/import_edges.csv)
 - [import_stats.csv](../analysis/dependencies/import_stats.csv)
 
-Key module-level signals:
+The import graph shows `log4j-core` as the implementation center of the selected scope. Most imports target external libraries (`external` = 3,180 edges), followed by internal dependencies on `log4j-core` (2,437) and `log4j-api` (1,147). The strongest cross-module flow is `log4j-core -> log4j-api` (816 imports), which confirms that core implementation classes depend on the public API abstractions rather than the reverse direction.
 
-- Most imports target external libraries (`external` = 3,180 edges), then internal `log4j-core` (2,437) and `log4j-api` (1,147).
-- `log4j-core` is the largest producer of imports (5,661 edges), consistent with its role as implementation nucleus.
-- Strong cross-module flow appears from `log4j-core -> log4j-api` (816 imports), confirming API abstraction usage by core components.
-- Bridge modules remain lightweight:
-  - `log4j-slf4j2-impl`: 75 outgoing imports
-  - `log4j-jdbc-dbcp2`: 29 outgoing imports
+Bridge modules stay comparatively lightweight. `log4j-slf4j2-impl` has 75 outgoing imports and `log4j-jdbc-dbcp2` has 29, which fits their role as integration layers around the central API/core design.
 
 #### Files with Most Dependencies
-Using `total = imports declared by the file + imports pointing to that file`:
+Using `total = imports declared by the file + imports pointing to that file`, the main hotspots are:
 
-- `log4j-core/.../config/plugins/Plugin.java` (`total=219`, `imports_received=213`)
-  - Central annotation type reused by many plugin declarations, so references from other files dominate.
-- `log4j-core/.../LogEvent.java` (`total=217`, `imports_received=208`)
-  - Shared event contract used across appenders/layouts/filters, so it is referenced by many classes.
-- `log4j-api/.../status/StatusLogger.java` (`total=185`)
-  - Cross-cutting status logging utility with high reuse across API and implementation code.
+- `log4j-core/.../config/plugins/Plugin.java` (`total=219`, `imports_received=213`): central annotation type reused by plugin declarations.
+- `log4j-core/.../LogEvent.java` (`total=217`, `imports_received=208`): shared event contract used across appenders, layouts, and filters.
+- `log4j-api/.../status/StatusLogger.java` (`total=185`): cross-cutting status logging utility reused across API and implementation code.
+
+These hotspots are expected in a configurable logging framework. They are not isolated design defects; they are stable extension and integration points that many components need to reference.
 
 #### Files with Least Dependencies
 The lowest non-zero totals are interface/marker-style files (`total=1`), for example:
 
-- `log4j-api/.../spi/CopyOnWrite.java` (`outgoing=0`, `incoming=1`)
-  - Marker annotation with no internal composition logic.
-- `log4j-api/.../internal/LogManagerStatus.java` (`outgoing=0`, `incoming=1`)
-  - Minimal enum-like/constant-style role with intentionally narrow coupling.
-- `log4j-core/.../Version.java` (`outgoing=0`, `incoming=1`)
-  - Single-purpose metadata holder.
+- `log4j-api/.../spi/CopyOnWrite.java` (`outgoing=0`, `incoming=1`): marker annotation with no internal composition logic.
+- `log4j-api/.../internal/LogManagerStatus.java` (`outgoing=0`, `incoming=1`): minimal enum-like/constant-style role with intentionally narrow coupling.
+- `log4j-core/.../Version.java` (`outgoing=0`, `incoming=1`): single-purpose metadata holder.
 
 There are also 43 files with `total=0` in this scoped graph, typically highly isolated utility or marker units.
 
 ### Knowledge Dependencies (Co-change Analysis)
-Knowledge dependencies are measured from commits in the selected time window using the same scoped file set.
-Evidence files:
+Knowledge dependencies are measured from commits in the selected time window using the same scoped file set. The main evidence files are:
 
 - [cochange_pairs.csv](../analysis/dependencies/cochange_pairs.csv)
 - [inconsistencies.md](../analysis/dependencies/inconsistencies.md)
 
-The strongest co-change values are low (max count = 2), which is coherent with a stable mature codebase and a one-year window focused on recent maintenance.
+The strongest co-change values are low (maximum count = 2). This is coherent with a mature codebase and a one-year window focused on recent maintenance rather than large-scale redesign.
 
 #### Key Findings
-- **Configuration/network cluster around appender infrastructure**
-  - Example pair: `SslSocketManager.java <-> SslConfiguration.java` (`cochange_count=2`, direct import present)
-  - Interpretation: maintenance changes propagate from transport manager logic to SSL configuration.
-- **Rolling appender strategy cluster**
-  - Example pairs:
-    - `DefaultRolloverStrategy.java <-> DirectWriteRolloverStrategy.java` (`2`, no direct import)
-    - `RollingFileManager.java <-> RollingRandomAccessFileManager.java` (`2`, no direct import)
-  - Interpretation: sibling strategies/managers evolve together due to shared policies and behavior alignment.
-- **HTTP/SMTP connection management cluster**
-  - Example pair: `HttpURLConnectionManager.java <-> UrlConnectionFactory.java` (`2`, no direct import)
-  - Interpretation: co-change shows these files are often modified together even without direct imports.
+- **Configuration/network cluster around appender infrastructure:** `SslSocketManager.java <-> SslConfiguration.java` (`cochange_count=2`, direct import present) shows that maintenance changes can propagate from transport manager logic to SSL configuration.
+- **Rolling appender strategy cluster:** pairs such as `DefaultRolloverStrategy.java <-> DirectWriteRolloverStrategy.java` and `RollingFileManager.java <-> RollingRandomAccessFileManager.java` co-change without direct imports, suggesting sibling strategies and managers evolve together due to shared policies.
+- **HTTP/SMTP connection management cluster:** `HttpURLConnectionManager.java <-> UrlConnectionFactory.java` (`2`, no direct import) shows feature-level maintenance coupling even when compilation dependencies are absent.
 
 #### Inconsistencies with Code Dependencies
-Several high co-change pairs have **no direct import relation**. This indicates maintenance dependencies caused by shared feature work rather than direct compilation links.
-
-Representative mismatches:
+Several high co-change pairs have no direct import relation. Representative mismatches include:
 
 - `DefaultRolloverStrategy.java <-> DirectWriteRolloverStrategy.java`
 - `HttpURLConnectionManager.java <-> UrlConnectionFactory.java`
 - `FileManager.java <-> RollingRandomAccessFileManager.java`
 
-These inconsistencies are not necessarily design defects; in this case they mostly reveal package-level and feature-level co-evolution (especially in rolling appenders and transport managers).
-
-### Handoff Notes for Patterns and Design Summary
-Inputs that should be reflected by the Patterns owner and in the final Design summary:
-
-- Dependency hotspots (`Plugin.java`, `LogEvent.java`, `StatusLogger.java`) indicate stable extension points and shared abstractions.
-- Co-change clusters in rolling appenders and connection managers show maintenance coupling that should be considered when discussing pattern alternatives.
-- Design summary should state both views explicitly:
-  - Import structure reveals intended architectural dependencies.
-  - Co-change reveals practical maintenance dependencies across feature families.
+These inconsistencies show that static imports reveal intended architectural dependencies, while co-change reveals practical maintenance dependencies across feature families. In this scope, the mismatches mostly point to package-level and feature-level co-evolution in rolling appenders and transport managers.
 
 ---
 
 ## Patterns
 
 ### Architectural Patterns Mapping
-| Pattern | Main classes/components | Module |
-| :--- | :--- | :--- |
-| **Adapter** | `Log4jLogger`, `org.slf4j.Logger`, `ExtendedLogger` | `log4j-slf4j2-impl` |
-| **Builder** | `ConsoleAppender.Builder`, `ConsoleAppender` | `log4j-core` |
-| **Strategy** | `Layout`, `PatternLayout`, `JsonLayout`, `LogEvent` | `log4j-core` |
-| **Chain of Resp.** | `CompositeFilter`, `Filter`, `ThresholdFilter`, `RegexFilter` | `log4j-core` |
+| Pattern | Main roles/classes | Module | Dependency link |
+| :--- | :--- | :--- | :--- |
+| **Adapter** | Adapter: `Log4jLogger`; Target: `org.slf4j.Logger`; Adaptee: `ExtendedLogger` | `log4j-slf4j2-impl` | Explains bridge dependencies into the Log4j2 API/core stack. |
+| **Builder** | Builder: `ConsoleAppender.Builder`; Product: `ConsoleAppender` | `log4j-core` | Explains recurring references to plugin-based construction metadata. |
+| **Strategy** | Context: `AbstractAppender`; Strategy: `Layout`; Concrete strategies: `PatternLayout`, `org.apache.logging.log4j.core.layout.JsonLayout`; shared event object: `LogEvent` | `log4j-core` | Explains why `LogEvent` is a central formatting hotspot. |
+| **Chain of Resp.** | Chain manager: `CompositeFilter`; Handler: `Filter`; Concrete handlers: `ThresholdFilter`, `RegexFilter` | `log4j-core` | Explains localized co-change across filtering behavior. |
+
+`org.apache.logging.log4j.core.layout.JsonLayout` is the core layout used in the Strategy example. It is distinct from `JsonTemplateLayout` in the `log4j-layout-template-json` module discussed in the Architecture report.
 
 ---
 
 ### Pattern 1: Adapter Pattern
-*   **Classes/Components Involved:**
-    *   **Adapter:** `org.apache.logging.slf4j.Log4jLogger`
-    *   **Target (Interface):** `org.slf4j.Logger`
-    *   **Adaptee:** `org.apache.logging.log4j.spi.ExtendedLogger`
-*   **Location:** `log4j-slf4j2-impl/src/main/java/org/apache/logging/slf4j/Log4jLogger.java`
-*   **Structure:**
-```mermaid
-classDiagram
-    class SLF4J_Logger {
-        <<interface>>
-    }
-    class Log4jLogger {
-        +info()
-    }
-    class ExtendedLogger {
-        +log()
-    }
-    SLF4J_Logger <|.. Log4jLogger : implements
-    Log4jLogger --> ExtendedLogger : adapts to
-```
+**Classes/components involved:** `org.apache.logging.slf4j.Log4jLogger`, `org.slf4j.Logger`, `org.apache.logging.log4j.spi.ExtendedLogger`
+**Location:** `log4j-slf4j2-impl/src/main/java/org/apache/logging/slf4j/Log4jLogger.java`
 
-*   **Analysis**: It translates SLF4J facade invocations into native Log4j2 API calls. This delegation enables interoperability between different logging frameworks, explaining the dependency flow from bridge modules toward the core implementation.
-*   **Problem Solved:** Addresses the interface mismatch between the SLF4J standard and the Log4j2 internal API, allowing applications to switch backends without code changes.
-*   **Alternative: Direct Implementation.** Log4j2 could natively implement the SLF4J interface.
-*   **Pros:** Reduces architectural layers and eliminates the need for a separate bridge module.
-*   **Cons:** Couples the Log4j2 core to an external API's lifecycle, potentially limiting the evolution of native features.
-*   **Hotspot Link:** Explains the incoming dependencies from `log4j-slf4j2-impl` to the core `ExtendedLogger`.
-
-### Pattern 2: Builder Pattern
-*   **Classes/Components Involved:**
-    *   **Builder:** `org.apache.logging.log4j.core.appender.ConsoleAppender.Builder`
-    *   **Product:** `org.apache.logging.log4j.core.appender.ConsoleAppender`
-*   **Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/appender/ConsoleAppender.java`
-*   **Structure:**
 ```mermaid
 graph LR
-    B[ConsoleAppender.Builder] -->|build| P[ConsoleAppender]
+    Target["org.slf4j.Logger<br/>(Target interface)"] -->|implemented by| Adapter["Log4jLogger<br/>(Adapter)"]
+    Adapter -->|delegates to| Adaptee["ExtendedLogger<br/>(Adaptee)"]
 ```
 
-*   **Analysis:** It standardizes the construction of complex components by validating configuration parameters before instantiation. Since every Builder is registered as a Plugin, this pattern centralizes imports toward `Plugin.java` for dynamic dependency injection.
-*   **Problem Solved:** Manages the instantiation of complex components (Appenders) that require multiple optional configuration parameters without resorting to large, rigid constructors.
-*   **Alternative: JavaBeans Pattern (Setters).** Using a default constructor followed by setter methods.
-*   **Pros:** Simplifies the codebase by removing the nested Builder classes.
-*   **Cons:** Permits the creation of "partially initialized" objects, which may lead to runtime errors if the component is started before all required fields are set.
-*   **Hotspot Link:** Directly contributes to the high frequency of imports in `Plugin.java`, as the plugin system reflects on these builders to inject configuration values.
+| Analysis | Problem solved | Alternative | Pros | Cons | Hotspot link |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `Log4jLogger` translates SLF4J facade calls into native Log4j2 API calls. | Resolves the interface mismatch between the SLF4J standard and the Log4j2 internal API, allowing applications to switch backends without changing application logging calls. | Directly implement the SLF4J interface inside the Log4j2 core. | Reduces architectural layers and avoids a separate bridge module. | Couples Log4j2 core to an external API lifecycle, which would limit native API evolution. | Explains incoming bridge dependencies from `log4j-slf4j2-impl` toward core/API logging abstractions. |
+
+### Pattern 2: Builder Pattern
+**Classes/components involved:** `org.apache.logging.log4j.core.appender.ConsoleAppender.Builder`, `org.apache.logging.log4j.core.appender.ConsoleAppender`
+**Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/appender/ConsoleAppender.java`
+
+```mermaid
+graph LR
+    B["ConsoleAppender.Builder"] -->|build| P["ConsoleAppender"]
+```
+
+| Analysis | Problem solved | Alternative | Pros | Cons | Hotspot link |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| The builder validates configuration parameters before creating the appender. Builders registered as plugins also concentrate metadata used by dynamic configuration. | Handles complex appender construction with optional configuration parameters without relying on large constructors. | JavaBeans-style construction with setters after a default constructor. | Simplifies class shape by removing nested builder classes. | Allows partially initialized objects and can move configuration errors from construction time to runtime. | Contributes to high references on `Plugin.java`, because the plugin system reflects on builders to inject configuration values. |
 
 ### Pattern 3: Strategy Pattern
-*   **Classes/Components Involved:**
-    *   **Strategy Interface:** `org.apache.logging.log4j.core.Layout`
-    *   **Concrete Strategies:** `org.apache.logging.log4j.core.layout.PatternLayout`, `org.apache.logging.log4j.core.layout.JsonLayout`
-    *   **Context:** `org.apache.logging.log4j.core.appender.AbstractAppender`
-*   **Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/Layout.java`
-*   **Structure:**
+**Classes/components involved:** `org.apache.logging.log4j.core.Layout`, `org.apache.logging.log4j.core.layout.PatternLayout`, `org.apache.logging.log4j.core.layout.JsonLayout`, `org.apache.logging.log4j.core.appender.AbstractAppender`, `org.apache.logging.log4j.core.LogEvent`
+**Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/Layout.java`
+
 ```mermaid
 classDiagram
     class AbstractAppender {
@@ -198,56 +147,33 @@ classDiagram
     Layout <|.. JsonLayout : "implements"
     Layout <|.. PatternLayout : "implements"
 ```
-*   **Analysis:** It allows for interchangeable log formatting algorithms. Concrete Appenders (the context) delegate the formatting of each `LogEvent` to a `Layout` object. This decoupling explains why `LogEvent` is a high-frequency hotspot, as it is the shared data passed from the Appender to the Strategy.
-*   **Problem Solved:** Decouples the destination of the log (Appender) from its data format (Layout), allowing the system to support new formats without modifying existing delivery logic.
-*   **Alternative: Static Class Inheritance.** Creating specialized subclasses for every combination, such as `ConsoleJsonAppender`.
-*   **Pros:** Provides a minor performance gain by using static binding instead of runtime delegation.
-*   **Cons:** Results in a significant increase in the number of classes (combinatorial explosion), making the library harder to navigate and maintain.
-*   **Hotspot Link:** The `LogEvent` serves as the shared state passed into every strategy, which is a direct factor in its status as a central dependency hotspot.
+
+| Analysis | Problem solved | Alternative | Pros | Cons | Hotspot link |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Appenders delegate log formatting to interchangeable `Layout` implementations. `LogEvent` is the shared event object passed into each strategy. | Decouples the destination of a log event from its output format, allowing new formats without modifying delivery logic. | Static inheritance combinations such as `ConsoleJsonAppender`. | May provide minor static-binding simplicity in very small systems. | Creates combinatorial class growth and makes the framework harder to navigate and maintain. | Explains why `LogEvent` receives many references across appenders, layouts, and filters. |
 
 ### Pattern 4: Chain of Responsibility
-*   **Classes/Components Involved:**
-    *   **Chain Manager:** `org.apache.logging.log4j.core.filter.CompositeFilter`
-    *   **Handler Interface:** `org.apache.logging.log4j.core.Filter`
-    *   **Concrete Handlers:** `org.apache.logging.log4j.core.filter.ThresholdFilter`, `org.apache.logging.log4j.core.filter.RegexFilter`
-*   **Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/filter/CompositeFilter.java`
-*   **Structure:**
+**Classes/components involved:** `org.apache.logging.log4j.core.filter.CompositeFilter`, `org.apache.logging.log4j.core.Filter`, `org.apache.logging.log4j.core.filter.ThresholdFilter`, `org.apache.logging.log4j.core.filter.RegexFilter`
+**Location:** `log4j-core/src/main/java/org/apache/logging/log4j/core/filter/CompositeFilter.java`
+
 ```mermaid
 graph LR
-    Event --> Filter1
-    Filter1 -->|Neutral| Filter2
-    Filter2 -->|Accept| Appender
-    Filter1 -->|Deny| Discard
+    Event["LogEvent"] --> Filter1["Filter"]
+    Filter1 -->|Neutral| Filter2["Next Filter"]
+    Filter2 -->|Accept| Appender["Appender"]
+    Filter1 -->|Deny| Discard["Discard"]
 ```
-*   **Analysis:** It organizes filters in a sequence where each element decides whether to accept, deny, or pass the log (Neutral) to the next handler. This structure decouples filtering logic, containing maintenance complexity within specific co-change clusters.
-*   **Problem Solved:** Enables the combination of multiple independent filtering rules. Each filter can decide the fate of a log event without needing awareness of other filters in the pipeline.
-*   **Alternative: Centralized Filter Logic.** A single conditional block within the Logger or Appender containing all logic.
-*   **Pros:** Centralizes the filtering logic in one location, making the execution flow easier to trace linearly.
-*   **Cons:** Reduces modularity; adding a specific rule (e.g., a `BurstFilter`) would require modifying the core filtering engine, increasing the risk of regression.
-*   **Hotspot Link:** This pattern contributes to the observed co-change clusters among filter implementations, as updates to the filtering contract often require synchronized changes across handlers.
 
+| Analysis | Problem solved | Alternative | Pros | Cons | Hotspot link |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Filters are organized as a sequence where each handler can accept, deny, or pass the event onward. | Allows multiple independent filtering rules without forcing each filter to know the full pipeline. | Centralize all filtering logic in one logger/appender conditional block. | Makes execution flow more linear in a small implementation. | Reduces modularity; adding a rule such as `BurstFilter` would require changing the central filtering engine and increase regression risk. | Helps explain co-change among filtering implementations when the filtering contract or behavior changes. |
 
 ## Summary
 
-### Main Dependency Findings
+The Design view shows a consistent relationship between structural dependencies and design patterns. Import analysis exposes the intended architecture: `log4j-core` is the implementation nucleus, `log4j-api` remains the stable abstraction layer, and bridge modules depend inward rather than forcing dependencies back into the public API. Co-change analysis adds the maintenance view: rolling appenders, transport managers, and filtering components sometimes evolve together even when they do not directly import each other.
 
-- The selected five-module scope (`log4j-core`, `log4j-api`, `log4j-layout-template-json`, `log4j-slf4j2-impl`, `log4j-jdbc-dbcp2`) contains 92,131 Java SLOC and 929 production files.
-- `log4j-core` is the structural center in import-based analysis, with the strongest flow toward `log4j-api`.
-- High-reference files such as `Plugin.java`, `LogEvent.java`, and `StatusLogger.java` act as shared extension or integration points.
-- Co-change analysis confirms maintenance clusters in rolling appenders and connection managers.
-- Some high co-change pairs have no direct imports, showing maintenance dependencies not visible from code structure alone.
+The selected patterns help manage that complexity. Builder and Strategy concentrate references around stable extension points such as `Plugin.java` and `LogEvent.java`; Adapter preserves interoperability with external logging facades; and Chain of Responsibility keeps filtering behavior modular. Together, these choices support a configurable framework that can evolve feature families while keeping the public API and core abstractions stable.
 
-### Pattern Impact
-
-- **Managed Hotspots (Builder & Strategy):** Static analysis reveals high reference counts for `Plugin.java` and `LogEvent.java`, which align with structural design choices. The Builder Pattern allows the plugin system to inject dependencies dynamically, concentrating references in the plugin loader. Similarly, the Strategy Pattern (Layouts) requires `LogEvent` as a shared context object, naturally making it a central dependency for any formatting component.
-- **Interoperability (Adapter):** The Adapter Pattern found in `log4j-slf4j2-impl` provides the structural bridge between external facades and the internal engine. By adapting the SLF4J interface to the native `ExtendedLogger` API, this pattern facilitates interoperability without necessitating changes to the core library's architecture.
-- **Maintenance Isolation (Chain of Responsibility):** The use of the Chain of Responsibility for filtering logic helps explain the presence of "co-change clusters" in the maintenance data. By decoupling specific feature-level logic from the main logging pipeline, the architecture contains the impact of frequent modifications, preventing maintenance ripple effects from reaching the stable `log4j-api`.
-- **Architectural Rationale:** The selection of these patterns suggests a preference for composition over rigid class inheritance. This approach helps manage the complexity of a highly configurable framework, maintaining a separation between the public-facing API and the modular, frequently evolving core implementation.
-
-### Integration Notes
-
-- Dependencies findings are evidence-backed through `analysis/dependencies/*` artifacts.
-- Dependencies and Patterns are now integrated in a single cohesive summary.
-- Final coordinator pass should verify wording consistency and traceability links.
+Traceability for these claims is maintained through the dependency artifacts in [analysis/dependencies](../analysis/dependencies), especially the import statistics, co-change pairs, and inconsistency notes.
 
 ---
