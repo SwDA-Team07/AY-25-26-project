@@ -40,3 +40,22 @@ Add one checkbox per issue found. If no issue is found, write: `Review completed
   Why it is a problem: It describes final coordination tasks rather than final design conclusions, which weakens the report's polish.
   Suggested fix: Remove `Integration Notes` and move any still-relevant traceability statement into the Summary.
   Owner: Stefano
+
+### Davide (346733) - consistency review (Design vs Overview/Architecture) - 2026-06-06
+
+- [ ] Problem: The Patterns summary table and the detailed Strategy section list different participants for the Strategy pattern.
+  Why it is a problem: The summary table row for Strategy lists `Layout, PatternLayout, JsonLayout, LogEvent`, but the detailed section names the Context as `AbstractAppender` (which is missing from the table) and treats `LogEvent` as the shared event data passed to the strategy, not as a participant class. The Architecture C3 view models the same `Appender` -> `Layout` formatting relation, so the table should match the detail and the Architecture report.
+  Suggested fix: Align the summary table with the detailed section: add `AbstractAppender` as the Context, and either drop `LogEvent` from the class list or relabel it as the shared event/context object.
+  Owner: Stefano
+
+- [ ] Problem: `JsonLayout` (Design) and `JsonTemplateLayout` (Architecture) can be read as the same class across reports.
+  Why it is a problem: The Design Strategy example uses core's `org.apache.logging.log4j.core.layout.JsonLayout`, while the Architecture report enters the `log4j-layout-template-json` container through `JsonTemplateLayout`. The near-identical names may make a reader think the JSON layout discussed in Design is the same class as the one in the JSON-template module, which it is not.
+  Suggested fix: Use the fully qualified `core.layout.JsonLayout` in the Strategy example, or add a one-line note clarifying that it is distinct from `JsonTemplateLayout` in `log4j-layout-template-json`.
+  Owner: Stefano
+
+- [ ] Problem: The Adapter Target is labelled inconsistently between prose and diagram.
+  Why it is a problem: The Adapter section writes the Target interface as `org.slf4j.Logger` in the table and prose, but the class diagram labels the same node `SLF4J_Logger`. The Cycle 1 patterns review already asked to keep Adapter roles consistent everywhere.
+  Suggested fix: Use one label for the Target (e.g. `org.slf4j.Logger`) in both the prose/table and the class diagram.
+  Owner: Stefano
+
+- Consistency confirmation (no issue): The cross-report invariants are consistent across `docs/overview.md`, `docs/design.md`, and `docs/architecture.md` — the five-module scope, `92,131` SLOC / `929` production files, the snapshot commit `83702bb...`, and the `log4j-core -> log4j-api` (`816` imports) dependency direction all match.
