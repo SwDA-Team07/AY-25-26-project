@@ -45,9 +45,10 @@ Add one checkbox per issue found. If no issue is found, write: `Review completed
 
 ## Final Review Notes - 2026-06-05
 
-- [ ] Problem: The C1 context description still says operations/security teams are external actors, but the current C1 diagram no longer shows that actor.
+- [x] Problem: The C1 context description still says operations/security teams are external actors, but the current C1 diagram no longer shows that actor.
   Why it is a problem: This creates a small mismatch between the diagram and the prose immediately below it.
   Suggested fix: Either re-add the operations/security actor to the C1 diagram, or change the prose to say they are stakeholders rather than actors shown in the diagram.
+  > Davide: done (2026-06-06). Reworded the C1 Context Description so the described external elements match the C1 diagram (applications/SLF4J facade and the output destination systems); developers, operations, security, and DevOps teams are now described as stakeholders, consistent with the Overview report, rather than as actors shown in the diagram.
   
 
 - [ ] Problem: The `log4j-core` C3 diagram is very dense and wide compared with the other diagrams.
@@ -58,3 +59,4 @@ Add one checkbox per issue found. If no issue is found, write: `Review completed
 - [ ] Problem: A few minor grammar issues remain in `docs/architecture.md`.
   Why it is a problem: The report is close to final, so small grammar errors stand out more during final evaluation.
   Suggested fix: Fix examples such as "interacting with logging system" -> "interacting with the logging system" and "Some architectural trade-offs remains present" -> "Some architectural trade-offs remain present".
+  > Davide: C1/C2 prose reviewed (2026-06-06), no grammar issues found there. The two cited examples are outside the C1/C2 scope: "interacting with logging system" is in the C3 `log4j-api` container description and "trade-offs remains present" is in the Summary, both owned by Yaman. Left unchecked pending Yaman's grammar pass on those sections.

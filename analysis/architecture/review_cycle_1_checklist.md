@@ -100,7 +100,9 @@ Suggested action:
 - [x] Yaman: reformat the SOLID findings consistently and improve readability.
 - [x] Yaman: connect SOLID and quality claims more clearly to Design/dependency evidence.
 - [ ] Both: check that the Architecture report reads coherently with Overview and Design.
+  > Davide: C1/C2 side checked (2026-06-06). Coherent with Overview and Design: same five-module scope, `92,131` SLOC, `log4j-core -> log4j-api` (816 imports) dependency direction, and the C1 stakeholder framing now matches the Overview report. Left unchecked pending Yaman's C3/SOLID coherence pass.
 - [ ] Both: fix wording, typos, and relative links before final freeze.
+  > Davide: C1/C2 prose, wording, and relative links checked (2026-06-06), no issues found in the C1/C2 sections. Left unchecked pending Yaman's pass on the C3/SOLID/Summary sections.
 
 ## Follow-up Corrections for Davide
 

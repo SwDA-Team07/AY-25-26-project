@@ -59,6 +59,7 @@ Check that all C4 diagrams are mutually consistent, use the correct C4 level not
   Owner: Davide / Yaman
   > Davide: C1/C2 reviewed (2026-06-03). After the cycle-2 content fixes the C1 and C2 diagrams render without overlapping arrows or labels. The residual overlap is in the denser C3 diagrams (Yaman), which is a known Mermaid auto-layout limitation; left unchecked until the C3 side is also clean.
   > Yaman: C3 level changes made(2026-06-04). A lot of changes made to up the readability but still Mermaid system still uses on-top layering.
+  > Davide: superseded for C1/C2 (2026-06-06). The diagrams were migrated from Mermaid to a Structurizr DSL workspace exported as SVG (commit `f3cc57c`, see `diagrams/architecture/workspace.dsl`), so the C1/C2 Mermaid auto-layout overlap concern no longer applies.
 
 - [x] Problem: External destination names are not fully consistent across C1, C2, and C3.
   Why it is a problem: The database destination is named differently, and `Log Aggregation / Monitoring` is not present in C3.
