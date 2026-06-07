@@ -1,7 +1,7 @@
 # Review Cycle 2 Checklist - Architecture
 
 Date prepared: 2026-05-28  
-Reviewer: Stefano () , Sefa (324924)
+Reviewer: Stefano (363677) , Sefa (324924)
 Scope: [`docs/architecture.md`](../../docs/architecture.md)
 
 ## Review Goal
@@ -60,3 +60,14 @@ Add one checkbox per issue found. If no issue is found, write: `Review completed
   Why it is a problem: The report is close to final, so small grammar errors stand out more during final evaluation.
   Suggested fix: Fix examples such as "interacting with logging system" -> "interacting with the logging system" and "Some architectural trade-offs remains present" -> "Some architectural trade-offs remain present".
   > Davide: C1/C2 prose reviewed (2026-06-06), no grammar issues found there. The two cited examples are outside the C1/C2 scope: "interacting with logging system" is in the C3 `log4j-api` container description and "trade-offs remains present" is in the Summary, both owned by Yaman. Left unchecked pending Yaman's grammar pass on those sections.
+
+
+- [ ] Problem: Complete decoupling between the C3 architecture description and the documented design patterns (`docs/design.md`).
+  Why it is a problem: The current text mentions abstract extension capabilities but fails to explicitly connect them to the behavioral patterns analyzed by the team (Adapter, Builder, Strategy, Chain of Responsibility). This reduces cross-document traceability and weakens the architectural narrative.
+  Suggested fix: Integrate clear references to design patterns within the container descriptions, the quality attributes section, and the summary block to anchor structural elasticity to concrete behavioral principles.
+  Owner: Yaman
+
+- [ ] Problem: Inconsistent list structures and missing backticks for software components within the C3 container descriptions.
+  Why it is a problem: While peripheral modules like `log4j-layout-template-json` use a clean, bolded numbering scheme, the core modules (`log4j-api` and `log4j-core`) lack a unified markup style, which hurts document uniformity.
+  Suggested fix: Standardize all component lists under a uniform bolded header format and ensure all class or component names are consistently enclosed in backticks.
+  Owner: Yaman
