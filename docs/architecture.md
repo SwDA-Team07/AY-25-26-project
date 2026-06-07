@@ -77,7 +77,13 @@ performance and configurability over a strict inward-only dependency rule.
 
 #### C3 Diagram of `log4j-core`
 
-![C3 Component Diagram - log4j-core](../diagrams/architecture/export/c3-log4j-core.svg)
+**Part 1 of `log4j-core`
+
+![C3 Component Diagram - log4j-core](..diagrams/architecture/export/c3-log4j-core-part1.svg)
+
+**Part 2 of `log4j-core`
+
+![C3 Component Diagram - log4j-core](..diagrams/architecture/export/c3-log4j-core-part2.svg)
  
 #### C3 Diagram of `log4j-api`
 
@@ -107,17 +113,18 @@ The 816 cross-module import edges between `log4j-core` and `log4j-api` and the c
 ### Container: `log4j-api`
 
 #### Container Description
-The `log4j-api` container provides the public logging interface used by applications and libraries. It defines the core abstractions for creating loggers, creating log messages, and interacting with logging system independently of the runtime implementation.
+The `log4j-api` container provides the public logging interface used by applications and libraries. The container also defines abstractions used by several design-pattern implementations identified in the Design report, including message creation facilities that support Builder-style construction workflows. It defines the core abstractions for creating loggers, creating log messages, and interacting with the logging system independently of the runtime implementation.
 
-Components:
 
-1. Logger API
+**Components**:
+
+1. **Logger API**
    - Responsibility: Provides public logging interface used by applications.
-2. LogManager
+2. **LogManager**
    - Responsibility: Creates and retrieves logger instances.
-3. Message Factory
+3. **Message** Factory
    - Responsibility: Supports structured and parameterized logging messages.
-4. Simple Logger
+4. **Simple Logger**
    - Responsibility: Provides minimal default logging implementation.
 
 ### Container: `log4j-core` 
@@ -125,21 +132,24 @@ Components:
 #### Container Description
 The `log4j-core` container contains the primary runtime implementation of Log4j2. It is responsible for configuration management, log event processing, filtering, formatting, plugin extensibility, and output delivery.
 
-Components:
+Several design patterns identified in the Design report are implemented within this container, including the Strategy pattern through interchangeable Layout implementations, the Chain of Responsibility pattern through filter processing chains, and the Builder pattern through plugin-based appender construction.
 
-1. LoggerContext
+
+**Components**:
+
+1. **LoggerContext**
    - Responsibility: Maintains runtime logging state and logger lifecycle management.
-2. Configuration
+2. **Configuration**
    - Responsibility: Loads and manages logging configuration.
-3. Appender
+3. **Appender**
    - Responsibility: Sends log events to output destinations.
-4. Layout
+4. **Layout**
    - Responsibility: Formats log events before output.
-5. Filter
+5. **Filter**
    - Responsibility: Determines whether log events should be processed.
-6. Plugin System
+6. **Plugin System**
    - Responsibility: Supports extensibility for appenders, layouts, and filters.
-7. Async Logger
+7. **Async Logger**
    - Responsibility: Provides asynchronous log event processing.
 
 ### Container: `log4j-layout-template-json`
@@ -161,7 +171,8 @@ The `log4j-layout-template-json` container provides a fast, garbage-free `Layout
 ### Container: `log4j-slf4j2-impl`
 
 #### Container Description
-The `log4j-slf4j2-impl` container is the **Adapter** between the SLF4J 2 API and the Log4j2 API. Applications that program against SLF4J can switch to Log4j2 as the runtime backend simply by placing this artifact on the classpath; the SLF4J `ServiceLoader` discovery then routes every SLF4J call into `log4j-api`.
+The `log4j-slf4j2-impl` container is a concrete realization of the Adapter pattern identified in the Design analysis. It translates SLF4J logging operations into Log4j2 API calls while preserving compatibility with the SLF4J programming model. Applications that program against SLF4J can switch to Log4j2 as the runtime backend simply by placing this artifact on the classpath; the SLF4J `ServiceLoader` discovery then routes every SLF4J call into `log4j-api`.
+
 
 **Components:**
 
@@ -213,12 +224,12 @@ At component level, the architecture generally maintains high cohesion by assign
 
 #### Characteristic 1 - Extensibility
 - **Definition:** The ability of the system to support new functionality without requiring major modifications to existing components.
-- **How Supported:** Log4j2 supports extensibility through its plugin-based architecture, SPI extension points, and modular separation between `log4j-api` and `log4j-core`. Components such as layouts, appenders, and adapters can be added independently through the plugin registration and interface-based integration.
+- **How Supported:** Log4j2 supports extensibility through its plugin-based architecture, SPI extension points, and modular separation between `log4j-api` and `log4j-core`. This extensibility is reinforced by Strategy-based runtime selection of layouts and appenders, allowing behavior to be extended without modifying existing runtime components. Components such as layouts, appenders, and adapters can be added independently through the plugin registration and interface-based integration.
 - **Evidence:** `Plugin.java` extension mechanism allows modules such as `log4j-layout-template-json` to integrate with the Layout SPI without modifying `log4j-core`.
 
 #### Characteristic 2 - Interoperability
 - **Definition:** The ability of the architecture to interact with external frameworks, APIs, and infrastructure systems.
-- **How Supported:** Log4j2 isolates interoperability concerns to dedicated adapter and integration modules. External logging frameworks communicate with the system through bridge components rather than coupling to runtime internals.
+- **How Supported:** Log4j2 isolates interoperability concerns to dedicated adapter and integration modules. The `log4j-slf4j2-impl` module applies the Adapter pattern to bridge SLF4J clients onto the Log4j2 API without introducing direct dependencies into the runtime engine. External logging frameworks communicate with the system through bridge components rather than coupling to runtime internals.
 - **Evidence:** `log4j-slf4j2-impl` module adapts SLF4J 2 API calls into `log4j-api` through components such as `Log4jLogger` and `Log4jServiceProvider`.
 
 #### Characteristic 3 - Maintainability
@@ -252,8 +263,8 @@ The dependency structure reflects a hub-and-spoke architecture centered around `
 
 The selected Log4j2 modules demonstrate a modular and extensible architecture centered around the separation between `log4j-api` and `log4j-core`. The architecture strongly supports extensibility through plugin-based components, SPI-driven integration mechanisms, and adapter modules such as `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2`.
 
-The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle and Interface Segregation Principle. The architecture also demonstrates strong modular separation between API abstractions, runtime implementations, and extension modules through the use of SPIs, adapters, and plugin-based integration. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remains present, especially in runtime coordination components such as `LoggerContext`, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
+The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle and Interface Segregation Principle. The architecture also demonstrates strong modular separation between API abstractions, runtime implementations, and extension modules through the use of SPIs, adapters, and plugin-based integration. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remain present, especially in runtime coordination components such as `LoggerContext`, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
 
-Overall, the analyzed architecture demonstrates strong modular decomposition, high component cohesion, and controlled coupling around the API/Core boundary while maintaining extensibility, interoperability, maintainability, and runtime performance across the selected scope.
+The architectural structure is supported by the design patterns found during dependency and design analysis. The Adapter pattern supports interoperability through `log4j-slf4j2-impl`, the Builder pattern supports flexible plugin-based component construction, the Strategy pattern enables interchangeable layouts and formatting behaviors, and the Chain of Responsibility pattern keeps filtering logic modular and extensible. Overall, the analyzed architecture demonstrates strong modular decomposition, high component cohesion, and controlled coupling around the API/Core boundary while maintaining extensibility, interoperability, maintainability, and runtime performance across the selected scope.
 
 ---
