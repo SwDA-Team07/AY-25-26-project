@@ -5,8 +5,8 @@
 ## Entry 1
 ### [2026-05-18]
 ## **Activities:**
-* Pushed contents into the "architecture.md".
-* Pushed diagrams into the "architecture.md".
+* Pushed contents into the `architecture.md`.
+* Pushed diagrams into the `architecture.md`.
 
 **Contribution to reports:**
 
@@ -27,8 +27,8 @@
 ## Entry 2
 ### [2026-05-25]
 ## **Activities:**
-* Pushed contents into the "architecture.md".
-* Pushed a table into the "architecture.md".
+* Pushed contents into the `architecture.md`.
+* Pushed a table into the `architecture.md`.
 
 **Contribution to reports:**
 
@@ -42,8 +42,8 @@
 ## Entry 3
 ### [2026-05-27]
 ## **Activities:**
-* Pushed contents into the "architecture.md".
-* Pushed diagrams into the "architecture.md".
+* Pushed contents into the `architecture.md`.
+* Pushed diagrams into the `architecture.md`.
 
 **Contribution to reports:**
 
@@ -56,8 +56,8 @@
 ## Entry 4
 ### [2026-05-28]
 ## **Activities:**
-* Pushed contents into the "architecture.md".
-* Pushed diagrams into the "architecture.md".
+* Pushed contents into the `architecture.md`.
+* Pushed diagrams into the `architecture.md`.
 
 **Contribution to reports:**
 
@@ -70,8 +70,8 @@
 ## Entry 5
 ### [2026-05-31 & 2026-06-01]
 ## **Activities:**
-* Pushed contents into the "architecture.md".
-* Pushed diagrams into the "architecture.md".
+* Pushed contents into the `architecture.md`.
+* Pushed diagrams into the `architecture.md`.
 * Pushed contents into the "c4_diagrams_review_cycle_2.md"
 
 **Contribution to reports:**
@@ -85,7 +85,7 @@
 ## Entry 6
 ### [2026-06-04]
 ## **Activities:**
-* Pushed diagrams into the "architecture.md".
+* Pushed diagrams into the `architecture.md`.
 * Pushed contents into the "c4_diagrams_review_cycle_2.md"
 
 **Contribution to reports:**
@@ -110,13 +110,30 @@
 
 ---
 
+## Entry 8
+### [2026-06-07]
+## **Activities:**
+* Pushed diagrams into the `architecture.md`.
+* Pushed contents into the "c4_diagrams_review_cycle_2.md"
+* Pushed content into the "diagrams" file.
+
+**Contribution to reports:**
+
+* Overview: No changes has been made.
+* Design: No changes has been made.
+* Architecture: Added new content to the Containers, Architectural findings and summary. Fixed grammer issues. Adde 2 diagrams to the project and `architecture.md`
+
+---
+
+ 
 # Summary of Contributions (Total Work Done)
 * **Analysis**
   * Added findings to checklists of the overview.md and design.md
 * **Overview:**
   * Component Level (C3) part of the `architecture.md`, with its diagrams.
 * **Design:**
-  * Component Level (C3) part of the `architecture.md` and its general design. 
+  * Component Level (C3) part of the `architecture.md` and its general design.
+  * Added 2 diagrams to the file (SVG and their KEY file).
 * **Architecture:**
   * Diagrams
   * Component Level (C3) content
