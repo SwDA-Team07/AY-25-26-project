@@ -77,7 +77,13 @@ performance and configurability over a strict inward-only dependency rule.
 
 #### C3 Diagram of `log4j-core`
 
-![C3 Component Diagram - log4j-core](../diagrams/architecture/export/c3-log4j-core.svg)
+- **Part 1 of `log4j-core` Diagram**
+
+![C3 Component Diagram - log4j-core](../diagrams/architecture/export/c3-log4j-core-part1.svg)
+
+- **Part 2 of `log4j-core` Diagram**
+
+![C3 Component Diagram - log4j-core](../diagrams/architecture/export/c3-log4j-core-part2.svg)
  
 #### C3 Diagram of `log4j-api`
 
