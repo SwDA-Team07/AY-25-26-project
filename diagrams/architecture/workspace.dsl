@@ -161,18 +161,11 @@ workspace "Apache Log4j2 Architecture" "C4 model for the Apache Log4j2 modules i
             autoLayout lr
         }
 
-        component log4jCore "c3-log4j-core-part1" {
-            title "C3 Component Diagram - log4j-core / Part 1"
-            include loggerContext configuration loggerConfig 
-            include log4jApi jsonLayout jdbcDbcp2 jdbcDatabases 
+        component log4jCore "c3-log4j-core" {
+            title "C3 Component Diagram - log4j-core"
+            include loggerContext configuration loggerConfig appender filter pluginSystem layout asyncLogger
+            include log4jApi jsonLayout jdbcDbcp2 fileSystem console networkEndpoints jdbcDatabases logAggregation
             autoLayout lr
-        }
-        
-        component log4jCore "c3-log4j-core-part2" {
-            title "C3 Component Diagram - log4j-core / Part 2"
-            include appender filter pluginSystem layout asyncLogger
-            include log4jApi jsonLayout jdbcDbcp2 fileSystem console networkEndpoints logAggregation jdbcDatabases 
-            autoLayout tb
         }
 
         component log4jApi "c3-log4j-api" {
