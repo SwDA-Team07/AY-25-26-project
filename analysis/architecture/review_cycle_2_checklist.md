@@ -51,10 +51,11 @@ Add one checkbox per issue found. If no issue is found, write: `Review completed
   > Davide: done (2026-06-06). Reworded the C1 Context Description so the described external elements match the C1 diagram (applications/SLF4J facade and the output destination systems); developers, operations, security, and DevOps teams are now described as stakeholders, consistent with the Overview report, rather than as actors shown in the diagram.
   
 
-- [ ] Problem: The `log4j-core` C3 diagram is very dense and wide compared with the other diagrams.
+- [x] Problem: The `log4j-core` C3 diagram is very dense and wide compared with the other diagrams.
   Why it is a problem: The diagram is technically complete, but it may be harder to read in the final Markdown/PDF because it contains many internal components plus several external context elements.
   Suggested fix: Consider reducing the external context shown in the `log4j-core` C3 diagram, or split the diagram into a runtime pipeline view and an output/integration context view if readability is poor in the final render.
   > Yaman: Made changes on the diagram (2026-06-07). I have made small changes to `log4j-core` diagrams. Only removed 2 external contexts because in previous review cycle I have fixed an issue under name "preserve parent-level context from C2 into C3.". As a test I have added two new SVG diagrams to the project named `c3-log4j-core-part1` and `c3-log4j-core-part2`, Also updated `workplace.dsl` with the newly added diagram codes.
+  > Follow-up: reverted the experimental split and kept the original single `c3-log4j-core.svg` view. Changing it was not strictly necessary without a clearer readability improvement.
 
 - [x] Problem: A few minor grammar issues remain in `docs/architecture.md`.
   Why it is a problem: The report is close to final, so small grammar errors stand out more during final evaluation.
