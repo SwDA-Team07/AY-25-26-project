@@ -110,13 +110,13 @@ The 816 cross-module import edges between `log4j-core` and `log4j-api` and the c
 The `log4j-api` container provides the public logging interface used by applications and libraries. The container also defines abstractions used by several design-pattern implementations identified in the Design report, including message creation facilities that support Builder-style construction workflows. It defines the core abstractions for creating loggers, creating log messages, and interacting with the logging system independently of the runtime implementation.
 
 
-**Components**:
+**Components:**
 
 1. **Logger API**
    - Responsibility: Provides public logging interface used by applications.
 2. **LogManager**
    - Responsibility: Creates and retrieves logger instances.
-3. **Message** Factory
+3. **Message Factory**
    - Responsibility: Supports structured and parameterized logging messages.
 4. **Simple Logger**
    - Responsibility: Provides minimal default logging implementation.
@@ -129,7 +129,7 @@ The `log4j-core` container contains the primary runtime implementation of Log4j2
 Several design patterns identified in the Design report are implemented within this container, including the Strategy pattern through interchangeable Layout implementations, the Chain of Responsibility pattern through filter processing chains, and the Builder pattern through plugin-based appender construction.
 
 
-**Components**:
+**Components:**
 
 1. **LoggerContext**
    - Responsibility: Maintains runtime logging state and logger lifecycle management.
