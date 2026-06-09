@@ -107,13 +107,12 @@ The 816 cross-module import edges between `log4j-core` and `log4j-api` and the c
 ### Container: `log4j-api`
 
 #### Container Description
-The `log4j-api` container provides the public logging interface used by applications and libraries. The container also defines abstractions used by several design-pattern implementations identified in the Design report, including message creation facilities that support Builder-style construction workflows. It defines the core abstractions for creating loggers, creating log messages, and interacting with the logging system independently of the runtime implementation.
-
+The `log4j-api` container provides the public logging interface used by applications and libraries. The container also defines abstractions used by several design-pattern implementations identified in the Design report, including `MessageFactory` facilities that support Builder-style construction workflows. It defines the core abstractions for creating loggers, generating log messages, and interacting with the logging system independently of the runtime implementation.
 
 **Components:**
 
 1. **Logger API**
-   - Responsibility: Provides public logging interface used by applications.
+   - Responsibility: Provides the public logging interface used by applications.
 2. **LogManager**
    - Responsibility: Creates and retrieves logger instances.
 3. **Message Factory**
@@ -121,13 +120,13 @@ The `log4j-api` container provides the public logging interface used by applicat
 4. **Simple Logger**
    - Responsibility: Provides minimal default logging implementation.
 
+
 ### Container: `log4j-core` 
 
 #### Container Description
 The `log4j-core` container contains the primary runtime implementation of Log4j2. It is responsible for configuration management, log event processing, filtering, formatting, plugin extensibility, and output delivery.
 
-Several design patterns identified in the Design report are implemented within this container, including the Strategy pattern through interchangeable Layout implementations, the Chain of Responsibility pattern through filter processing chains, and the Builder pattern through plugin-based appender construction.
-
+Several design patterns identified in the Design report are implemented within the `log4j-core` container, including the **Strategy pattern** through interchangeable `Layout` implementations, the **Chain of Responsibility** pattern through filter-processing chains, and the **Builder Pattern** through plugin-based appender construction.
 
 **Components:**
 
@@ -146,6 +145,7 @@ Several design patterns identified in the Design report are implemented within t
 7. **Async Logger**
    - Responsibility: Provides asynchronous log event processing.
 
+
 ### Container: `log4j-layout-template-json`
 
 #### Container Description
@@ -162,11 +162,11 @@ The `log4j-layout-template-json` container provides a fast, garbage-free `Layout
 4. **JsonWriter**
    - Responsibility: Low-allocation JSON encoder used by resolvers to write output buffers efficiently.
 
+
 ### Container: `log4j-slf4j2-impl`
 
 #### Container Description
 The `log4j-slf4j2-impl` container is a concrete realization of the Adapter pattern identified in the Design analysis. It translates SLF4J logging operations into Log4j2 API calls while preserving compatibility with the SLF4J programming model. Applications that program against SLF4J can switch to Log4j2 as the runtime backend simply by placing this artifact on the classpath; the SLF4J `ServiceLoader` discovery then routes every SLF4J call into `log4j-api`.
-
 
 **Components:**
 
@@ -178,6 +178,7 @@ The `log4j-slf4j2-impl` container is a concrete realization of the Adapter patte
    - Responsibility: Adapts each SLF4J `Logger` call to the corresponding `ExtendedLogger` call in `log4j-api`.
 4. **Log4jMarkerFactory / Log4jMDCAdapter**
    - Responsibility: Bridge SLF4J marker and MDC concepts onto the Log4j2 equivalents.
+
 
 ### Container: `log4j-jdbc-dbcp2`
 
@@ -191,9 +192,11 @@ The `log4j-jdbc-dbcp2` container supplies a pooled JDBC `ConnectionSource` for t
 2. **Commons DBCP pool integration**
    - Responsibility: Configures and manages the underlying connection pool (sizing, validation, eviction).
 
+
 ### Out-of-Scope Context
 
 Additional Log4j2 integration modules exist outside the selected scope, but they are not expanded at C3 level because the analyzed modules already cover the primary API/runtime boundary, extension SPI mechanisms, external adapters, and infrastructure integrations required for this analysis.
+
 
 ### SOLID Principles Analysis at Level 3
 
@@ -218,7 +221,7 @@ At component level, the architecture generally maintains high cohesion by assign
 
 #### Characteristic 1 - Extensibility
 - **Definition:** The ability of the system to support new functionality without requiring major modifications to existing components.
-- **How Supported:** Log4j2 supports extensibility through its plugin-based architecture, SPI extension points, and modular separation between `log4j-api` and `log4j-core`. This extensibility is reinforced by Strategy-based runtime selection of layouts and appenders, allowing behavior to be extended without modifying existing runtime components. Components such as layouts, appenders, and adapters can be added independently through the plugin registration and interface-based integration.
+- **How Supported:** Log4j2 supports extensibility through its plugin-based architecture, SPI extension points, and modular separation between `log4j-api` and `log4j-core`. This extensibility is reinforced by Strategy-based runtime selection of layouts and appenders, allowing behavior to be extended without modifying existing runtime components. Components such as layouts, appenders, and adapters can be added independently through plugin registration and interface-based integration mechanisms.
 - **Evidence:** `Plugin.java` extension mechanism allows modules such as `log4j-layout-template-json` to integrate with the Layout SPI without modifying `log4j-core`.
 
 #### Characteristic 2 - Interoperability
@@ -228,13 +231,13 @@ At component level, the architecture generally maintains high cohesion by assign
 
 #### Characteristic 3 - Maintainability
 - **Definition:** The ability of the system to support modification, extension, and long-term evolution/support with minimal impact on existing components.
-- **How Supported:** Log4j2 separates API abstractions, runtime implementations, adapters, and extension modules into distinct `Maven artifacts`. Components communicate primarily through interfaces, SPIs, and plugin contracts, reducing direct subsystem dependency.
+- **How Supported:** Log4j2 separates API abstractions, runtime implementations, adapters, and extension modules into distinct `Maven artifacts`. Components communicate primarily through interfaces, SPIs, and plugin contracts, reducing direct subsystem dependencies.
 - **Evidence:** The separation between `log4j-api`, `log4j-core`, `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2` isolates responsibilities into dedicated modules connected through APIs and SPIs. This modularization allows features such as JSON layouts, SLF4J adaptation, and JDBC connection pooling to evolve independently without modifying the primary runtime pipeline.
 
 #### Characteristic 4 - Performance and Scalability
 - **Definition:** The ability of the system to efficiently process increased workloads while minimizing runtime overhead.
 - **How Supported:** Log4j2 uses asynchronous logging, pooled resource management, and low-allocation serialization mechanisms to reduce runtime overhead and improve throughput under high logging loads.
-- **Evidence:** Async Logger supports asynchronous event-processing inside `log4j-core`, while `JsonWriter` in `log4j-layout-template-json` lowers allocation overhead during JSON serialization. The `PoolingDriverConnectionSource` in `log4j-jdbc-dbcp2` reduces database connection acquisition costs through connection pooling.
+- **Evidence:** `Async Logger` supports asynchronous event processing within `log4j-core`, while `JsonWriter` in `log4j-layout-template-json` lowers allocation overhead during JSON serialization. The `PoolingDriverConnectionSource` in `log4j-jdbc-dbcp2` reduces database connection acquisition costs through connection pooling.
 
 ### Coupling and Cohesion Metrics (Optional)
 
@@ -244,7 +247,7 @@ At component level, the architecture generally demonstrates high cohesion. Compo
 
 | Metric | Value | Assessment |
 |--------|-------|------------|
-| API/Core Import Coupling| 816 import edges | High but expected due to implementation relationship |
+| API/Core Import Coupling | 816 import edges | High but expected due to implementation relationship |
 | Component Cohesion | High | Most components maintain focused responsibilities |
 | Tightly Coupled Pairs | log4j-api ↔ log4j-core | Central architectural dependency |
 | Plugin-Based Extension Points | Multiple SPI interfaces | Supports low coupling for extensions |
@@ -257,8 +260,8 @@ The dependency structure reflects a hub-and-spoke architecture centered around `
 
 The selected Log4j2 modules demonstrate a modular and extensible architecture centered around the separation between `log4j-api` and `log4j-core`. The architecture strongly supports extensibility through plugin-based components, SPI-driven integration mechanisms, and adapter modules such as `log4j-layout-template-json`, `log4j-slf4j2-impl`, and `log4j-jdbc-dbcp2`.
 
-The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle and Interface Segregation Principle. The architecture also demonstrates strong modular separation between API abstractions, runtime implementations, and extension modules through the use of SPIs, adapters, and plugin-based integration. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remain present, especially in runtime coordination components such as `LoggerContext`, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
+The component-level analysis demonstrates generally strong alignment with several SOLID principles, particularly Open/Closed Principle and Interface Segregation Principle. The architecture also demonstrates strong modular separation between API abstractions, runtime implementations, and extension modules through the use of SPIs, adapters, and plugin-based integration. The dependency analysis and component diagrams indicate that extensibility is achieved primarily through stable interfaces, plugin registration mechanisms, and adapter-based integration rather than direct modification of runtime components. Some architectural trade-offs remain, especially in runtime coordination components such as `LoggerContext`, where centralized management increases component responsibility and complexity in exchange for simpler runtime orchestration.
 
-The architectural structure is supported by the design patterns found during dependency and design analysis. The Adapter pattern supports interoperability through `log4j-slf4j2-impl`, the Builder pattern supports flexible plugin-based component construction, the Strategy pattern enables interchangeable layouts and formatting behaviors, and the Chain of Responsibility pattern keeps filtering logic modular and extensible. Overall, the analyzed architecture demonstrates strong modular decomposition, high component cohesion, and controlled coupling around the API/Core boundary while maintaining extensibility, interoperability, maintainability, and runtime performance across the selected scope.
+The architectural structure is supported by the design patterns identified during the dependency and design analysis. The Adapter pattern supports interoperability through `log4j-slf4j2-impl`, the Builder pattern supports flexible plugin-based component construction, the Strategy pattern enables interchangeable layouts and formatting behaviors, and the Chain of Responsibility pattern keeps filtering logic modular and extensible. Overall, the analyzed architecture demonstrates strong modular decomposition, high component cohesion, and controlled coupling around the API/Core boundary while maintaining extensibility, interoperability, maintainability, and runtime performance across the selected scope.
 
 ---
