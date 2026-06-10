@@ -104,8 +104,28 @@
 
 ---
 
+### 2026-06-10
+
+## **Activities:**
+
+* Refined the Overview runtime-flow diagram and related review checklist notes in [`docs/overview.md`](../docs/overview.md) and [`analysis/overview/review_cycle_2_checklist.md`](../analysis/overview/review_cycle_2_checklist.md)
+* Clarified the Overview scope wording and report links so the final document stays aligned with the selected Log4j2 modules and evidence artifacts
+* Migrated the Architecture C4 diagrams to a reproducible Structurizr DSL workspace in [`diagrams/architecture/workspace.dsl`](../diagrams/architecture/workspace.dsl), exported the SVG diagrams, and documented the generated diagram assets in [`diagrams/README.md`](../diagrams/README.md)
+* Reworked [`docs/architecture.md`](../docs/architecture.md) so the report references the exported diagrams instead of embedding long inline diagram definitions
+* Added final Design review findings to [`analysis/design/review_cycle_2_checklist.md`](../analysis/design/review_cycle_2_checklist.md), covering readability, final-report cleanup, pattern table structure, and cross-report consistency
+* Reviewed the experimental split of the `log4j-core` C3 diagram, restored the single `c3-log4j-core.svg` view, and closed the related Architecture review note in [`analysis/architecture/review_cycle_2_checklist.md`](../analysis/architecture/review_cycle_2_checklist.md)
+* Fixed final wording and typo issues in [`docs/architecture.md`](../docs/architecture.md)
+
+**Contribution to reports:**
+
+* Overview: Completed final scope/readability refinements in [`docs/overview.md`](../docs/overview.md), especially the runtime-flow explanation, links, and consistency with the selected analysis artifacts.
+* Design: Added and consolidated the final review-cycle findings in [`analysis/design/review_cycle_2_checklist.md`](../analysis/design/review_cycle_2_checklist.md), including the final checks on readability, redundant working notes, pattern presentation, and consistency with Overview/Architecture.
+* Architecture: Consolidated the C4 diagram pipeline around Structurizr DSL and SVG exports, simplified [`docs/architecture.md`](../docs/architecture.md) by linking diagram assets, restored the final single `log4j-core` C3 view, closed the related readability finding, and performed final wording cleanup.
+
+---
+
 ## Summary of Contributions
 
 * **Overview:** Project setup and full [`Overview`](../docs/overview.md) report draft, including scope explanation, stakeholders, statistics, and overview diagram.
-* **Design:** Coordinator review of the [`Design`](../docs/design.md) Dependencies and Patterns sections, including feedback checklists, follow-up tracking, evidence consistency, Summary alignment, cleanup after merge conflict resolution, and review cycle 2 template preparation.
-* **Architecture:** Architecture template preparation for Mermaid-based C4 diagrams and component-level SOLID analysis, first-cycle Architecture review coordination through a scoped checklist for C1/C2, C3, SOLID, quality attributes, and summary completion, plus final-week C4 review coordination and cycle 2 findings.
+* **Design:** Coordinator review of the [`Design`](../docs/design.md) Dependencies and Patterns sections, including feedback checklists, follow-up tracking, evidence consistency, Summary alignment, cleanup after merge conflict resolution, final Design cycle 2 findings, and consistency checks across Overview and Architecture.
+* **Architecture:** Architecture template preparation for Mermaid-based C4 diagrams and component-level SOLID analysis, first-cycle Architecture review coordination through a scoped checklist for C1/C2, C3, SOLID, quality attributes, and summary completion, final-week C4 review coordination, migration to Structurizr DSL/SVG diagram exports, and final Architecture readability cleanup.
